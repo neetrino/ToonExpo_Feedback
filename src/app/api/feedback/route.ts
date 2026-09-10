@@ -3,20 +3,17 @@ import { ZodError } from 'zod';
 import { feedbackPayloadSchema } from '@/lib/feedback-schema';
 import { isHoneypotFilled, saveFeedback } from '@/lib/feedback-submit';
 import { logger } from '@/lib/logger';
+import { isAllowedFeedbackOrigin } from '@/lib/request-origin';
 
 export async function POST(request: Request): Promise<NextResponse> {
-  const origin = request.headers.get('origin');
-  const host = request.headers.get('host');
-  if (origin && host) {
-    let originHost = '';
-    try {
-      originHost = new URL(origin).host;
-    } catch {
-      return NextResponse.json({ error: 'invalid_origin' }, { status: 403 });
-    }
-    if (originHost !== host) {
-      return NextResponse.json({ error: 'invalid_origin' }, { status: 403 });
-    }
+  if (
+    !isAllowedFeedbackOrigin({
+      origin: request.headers.get('origin'),
+      referer: request.headers.get('referer'),
+      host: request.headers.get('host'),
+    })
+  ) {
+    return NextResponse.json({ error: 'invalid_origin' }, { status: 403 });
   }
 
   let body: unknown;
