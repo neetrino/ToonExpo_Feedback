@@ -4,7 +4,7 @@
 
 Spreadsheet ID: `1nGBUK_Do0MZZ-RzN4MSeJpFuJ-RpQUzrgnDTdBkVJBY`
 
-Структура создана 2026-09-10: листы `Visited` и `Missed`, шапка в первой строке. Webhook для записи ответов подключим вместе с кодом сайта.
+Структура создана 2026-09-10: листы `Visited` и `Missed`, шапка в первой строке. Скрипт вебхука лежит в репозитории; URL и секрет в env появятся после деплоя Web App.
 
 ---
 
@@ -48,12 +48,14 @@ URL скрипта = пароль. Его кладём только в `.env` / 
 
 ---
 
-## Скрипт (вставим при подключении)
+## Скрипт
 
-Логика: проверить секрет → понять лист `Visited` или `Missed` → `appendRow`.  
-Полный текст добавим в репозиторий вместе с кодом сайта, не раньше.
+Готовый файл: [`docs/apps-script/Code.gs`](./apps-script/Code.gs).
 
-Env:
+Логика: проверить `secret` в JSON → лист `Visited` или `Missed` → `appendRow`.  
+Секрет кладём в тело запроса: Apps Script часто не отдаёт кастомные заголовки.
+
+Env (Vercel / CI, не git):
 
 ```text
 SHEETS_WEBHOOK_URL="https://script.google.com/macros/s/.../exec"

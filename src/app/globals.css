@@ -1,0 +1,52 @@
+@import 'tailwindcss';
+@import '@fontsource/onest/400.css';
+@import '@fontsource/onest/600.css';
+@import '@fontsource/onest/700.css';
+@import '@fontsource/noto-sans/400.css';
+@import '@fontsource/noto-sans/500.css';
+@import '@fontsource/noto-sans-armenian/400.css';
+@import '@fontsource/noto-sans-armenian/500.css';
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-highlight: var(--highlight);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-destructive: var(--destructive);
+  --font-sans: 'Noto Sans Armenian', 'Noto Sans', system-ui, sans-serif;
+  --font-display: Onest, 'Noto Sans', system-ui, sans-serif;
+}
+
+:root {
+  --background: #f4f7f8;
+  --foreground: #00303d;
+  --primary: #00303d;
+  --primary-foreground: #ffffff;
+  --secondary: #246976;
+  --accent: #2ba8b0;
+  --highlight: #ffd700;
+  --muted: #ffffff;
+  --muted-foreground: #4a5f66;
+  --border: #d7e2e5;
+  --card: #ffffff;
+  --destructive: #b42318;
+}
+
+html,
+body {
+  min-height: 100dvh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+body {
+  margin: 0;
+}

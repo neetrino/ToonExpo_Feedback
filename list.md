@@ -4,11 +4,11 @@
 - [x] **2.** Заполнен `docs/BRIEF.md`
 - [x] **3.** Онбординг по `project-onboarding` (документы, без кода)
 - [x] **4.** Размер **A** зафиксирован в TECH_CARD
-- [ ] **5.** Подтвердить `docs/TECH_CARD.md` (сейчас черновик)
+- [x] **5.** TECH_CARD: решения закрыты, код в работе
 - [x] **6.** Черновик архитектуры `docs/01-ARCHITECTURE.md` — код после утверждения
 - [x] **7.** `.env.example` обновлён; локальный `.env` не коммитить
 - [x] **8.** Структура Sheet готова (Visited / Missed). Webhook — вместе с кодом. Neon dev уже есть
-- [ ] **9.** Локально проверить БД и Sheet — после кода
-- [ ] **10.** Quality: Branch Protection, Secret Protection, Dependabot — после scaffold
+- [ ] **9.** Локально проверить БД и Sheet — миграция + webhook
+- [ ] **10.** Quality: Branch Protection, Secret Protection, Dependabot
 
-Язык, контакты, вход Visited/Missed, Sheet-webhook и лимиты БД согласованы. Код — после явного старта реализации.
+Код приложения написан. Остались dev-миграция, деплой Apps Script и прод-env.
