@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type OptionRadioGroupProps<T extends string> = {
@@ -52,6 +53,9 @@ export function OptionRadioGroup<T extends string>({
             >
               {getLabel(option)}
             </span>
+            {checked ? (
+              <Check className="ml-auto mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            ) : null}
           </label>
         );
       })}
@@ -111,6 +115,9 @@ export function OptionCheckboxGroup<T extends string>({
             >
               {getLabel(option)}
             </span>
+            {checked ? (
+              <Check className="ml-auto mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            ) : null}
           </label>
         );
       })}

@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { Frown, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { UseFormRegisterReturn } from 'react-hook-form';
 import { cn } from '@/lib/utils';
@@ -31,6 +32,7 @@ export function TextField({
   autoComplete,
   inputMode,
   placeholder,
+  icon,
 }: {
   label: string;
   registration: UseFormRegisterReturn;
@@ -39,18 +41,30 @@ export function TextField({
   autoComplete?: string;
   inputMode?: 'text' | 'email' | 'tel';
   placeholder?: string;
+  icon?: ReactNode;
 }) {
   return (
     <label className="block">
       <span className="mb-2 block text-sm font-medium">{label}</span>
-      <input
-        type={type}
-        autoComplete={autoComplete}
-        inputMode={inputMode}
-        placeholder={placeholder}
-        className={cn(controlClassName, error ? 'border-destructive' : 'border-input')}
-        {...registration}
-      />
+      <span className="relative block">
+        {icon ? (
+          <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-accent">
+            {icon}
+          </span>
+        ) : null}
+        <input
+          type={type}
+          autoComplete={autoComplete}
+          inputMode={inputMode}
+          placeholder={placeholder}
+          className={cn(
+            controlClassName,
+            icon && 'pl-11',
+            error ? 'border-destructive' : 'border-input',
+          )}
+          {...registration}
+        />
+      </span>
       <FieldErrorText error={error} />
     </label>
   );
@@ -118,8 +132,14 @@ export function ScoreField({
         ))}
       </div>
       <div className="mt-2 flex justify-between gap-3 text-xs text-muted-foreground">
-        <span>{low}</span>
-        <span className="text-right">{high}</span>
+        <span className="inline-flex items-center gap-1">
+          <Frown className="size-3.5" aria-hidden="true" />
+          {low}
+        </span>
+        <span className="inline-flex items-center gap-1 text-right">
+          {high}
+          <Smile className="size-3.5 text-accent" aria-hidden="true" />
+        </span>
       </div>
       <FieldErrorText error={error} />
     </fieldset>
@@ -129,15 +149,20 @@ export function ScoreField({
 export function QuestionBlock({
   legend,
   error,
+  icon,
   children,
 }: {
   legend: string;
   error?: FieldIssue;
+  icon?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <fieldset>
-      <legend className="mb-3 text-[15px] font-semibold leading-snug">{legend}</legend>
+      <legend className="mb-3 flex items-start gap-2 text-[15px] font-semibold leading-snug">
+        {icon ? <span className="mt-0.5 text-accent">{icon}</span> : null}
+        <span>{legend}</span>
+      </legend>
       {children}
       <FieldErrorText error={error} />
     </fieldset>

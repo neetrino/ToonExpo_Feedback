@@ -1,5 +1,17 @@
 'use client';
 
+import {
+  Building2,
+  CalendarDays,
+  CircleAlert,
+  Handshake,
+  Mail,
+  Phone,
+  Sparkles,
+  Target,
+  User,
+  UserRound,
+} from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -7,6 +19,7 @@ import { Controller, useForm, useWatch, type FieldPath } from 'react-hook-form';
 import { QuestionBlock, ScoreField, TextAreaField, TextField } from '@/components/form-fields';
 import { OptionCheckboxGroup, OptionRadioGroup } from '@/components/form-option-groups';
 import { FormWizard } from '@/components/form-wizard';
+import { IconBubble } from '@/components/icon-bubble';
 import { useRouter } from '@/i18n/navigation';
 import {
   B2B_OUTCOME_KEYS,
@@ -168,18 +181,23 @@ export function VisitedForm() {
       >
         {step === 0 ? (
           <section className="grid gap-4 sm:grid-cols-2">
-            <h2 className="sm:col-span-2 font-display text-xl font-semibold">
-              {t('contact.title')}
-            </h2>
+            <div className="sm:col-span-2 flex items-center gap-3">
+              <IconBubble>
+                <UserRound className="size-5" />
+              </IconBubble>
+              <h2 className="font-display text-xl font-semibold">{t('contact.title')}</h2>
+            </div>
             <TextField
               label={t('contact.firstName')}
               autoComplete="given-name"
+              icon={<User className="size-4" />}
               registration={form.register('firstName')}
               error={form.formState.errors.firstName}
             />
             <TextField
               label={t('contact.lastName')}
               autoComplete="family-name"
+              icon={<UserRound className="size-4" />}
               registration={form.register('lastName')}
               error={form.formState.errors.lastName}
             />
@@ -188,6 +206,7 @@ export function VisitedForm() {
               type="email"
               inputMode="email"
               autoComplete="email"
+              icon={<Mail className="size-4" />}
               registration={form.register('email')}
               error={form.formState.errors.email}
             />
@@ -197,6 +216,7 @@ export function VisitedForm() {
               inputMode="tel"
               autoComplete="tel"
               placeholder="+374…"
+              icon={<Phone className="size-4" />}
               registration={form.register('phone')}
               error={form.formState.errors.phone}
             />
@@ -211,7 +231,11 @@ export function VisitedForm() {
 
         {step === 1 ? (
           <>
-            <QuestionBlock legend={t('visited.q1')} error={form.formState.errors.answers?.problems}>
+            <QuestionBlock
+              legend={t('visited.q1')}
+              icon={<CircleAlert className="size-4" />}
+              error={form.formState.errors.answers?.problems}
+            >
               <OptionCheckboxGroup
                 name="problems"
                 options={PROBLEM_KEYS}
@@ -235,6 +259,7 @@ export function VisitedForm() {
           <>
             <QuestionBlock
               legend={t('visited.q2')}
+              icon={<Target className="size-4" />}
               error={form.formState.errors.answers?.visitGoals}
             >
               <OptionCheckboxGroup
@@ -259,7 +284,11 @@ export function VisitedForm() {
                   control={form.control}
                   name="answers.propertyOutcome"
                   render={({ field, fieldState }) => (
-                    <QuestionBlock legend={t('visited.q3Property')} error={fieldState.error}>
+                    <QuestionBlock
+                      legend={t('visited.q3Property')}
+                      icon={<Building2 className="size-4" />}
+                      error={fieldState.error}
+                    >
                       <OptionRadioGroup
                         name="propertyOutcome"
                         options={PROPERTY_OUTCOME_KEYS}
@@ -286,7 +315,11 @@ export function VisitedForm() {
                   control={form.control}
                   name="answers.b2bOutcome"
                   render={({ field, fieldState }) => (
-                    <QuestionBlock legend={t('visited.q3B2b')} error={fieldState.error}>
+                    <QuestionBlock
+                      legend={t('visited.q3B2b')}
+                      icon={<Handshake className="size-4" />}
+                      error={fieldState.error}
+                    >
                       <OptionRadioGroup
                         name="b2bOutcome"
                         options={B2B_OUTCOME_KEYS}
@@ -356,7 +389,11 @@ export function VisitedForm() {
               control={form.control}
               name="answers.vol2Plan"
               render={({ field, fieldState }) => (
-                <QuestionBlock legend={t('visited.q6')} error={fieldState.error}>
+                <QuestionBlock
+                  legend={t('visited.q6')}
+                  icon={<CalendarDays className="size-4" />}
+                  error={fieldState.error}
+                >
                   <OptionRadioGroup
                     name="vol2Plan"
                     options={VOL2_PLAN_KEYS}
@@ -377,6 +414,7 @@ export function VisitedForm() {
             ) : null}
             <QuestionBlock
               legend={t('visited.q7')}
+              icon={<Sparkles className="size-4" />}
               error={form.formState.errors.answers?.vol2Wants}
             >
               <OptionCheckboxGroup

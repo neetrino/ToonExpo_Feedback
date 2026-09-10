@@ -1,5 +1,16 @@
 'use client';
 
+import {
+  Building2,
+  CalendarDays,
+  HelpCircle,
+  Lightbulb,
+  Mail,
+  Phone,
+  Sparkles,
+  User,
+  UserRound,
+} from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -7,6 +18,7 @@ import { Controller, useForm, useWatch, type FieldPath } from 'react-hook-form';
 import { QuestionBlock, TextAreaField, TextField } from '@/components/form-fields';
 import { OptionCheckboxGroup, OptionRadioGroup } from '@/components/form-option-groups';
 import { FormWizard } from '@/components/form-wizard';
+import { IconBubble } from '@/components/icon-bubble';
 import { useRouter } from '@/i18n/navigation';
 import {
   MOTIVATION_KEYS,
@@ -136,18 +148,23 @@ export function MissedForm() {
       >
         {step === 0 ? (
           <section className="grid gap-4 sm:grid-cols-2">
-            <h2 className="sm:col-span-2 font-display text-xl font-semibold">
-              {t('contact.title')}
-            </h2>
+            <div className="sm:col-span-2 flex items-center gap-3">
+              <IconBubble>
+                <UserRound className="size-5" />
+              </IconBubble>
+              <h2 className="font-display text-xl font-semibold">{t('contact.title')}</h2>
+            </div>
             <TextField
               label={t('contact.firstName')}
               autoComplete="given-name"
+              icon={<User className="size-4" />}
               registration={form.register('firstName')}
               error={form.formState.errors.firstName}
             />
             <TextField
               label={t('contact.lastName')}
               autoComplete="family-name"
+              icon={<UserRound className="size-4" />}
               registration={form.register('lastName')}
               error={form.formState.errors.lastName}
             />
@@ -156,6 +173,7 @@ export function MissedForm() {
               type="email"
               inputMode="email"
               autoComplete="email"
+              icon={<Mail className="size-4" />}
               registration={form.register('email')}
               error={form.formState.errors.email}
             />
@@ -165,6 +183,7 @@ export function MissedForm() {
               inputMode="tel"
               autoComplete="tel"
               placeholder="+374…"
+              icon={<Phone className="size-4" />}
               registration={form.register('phone')}
               error={form.formState.errors.phone}
             />
@@ -183,7 +202,11 @@ export function MissedForm() {
               control={form.control}
               name="answers.noVisitReason"
               render={({ field, fieldState }) => (
-                <QuestionBlock legend={t('missed.q1')} error={fieldState.error}>
+                <QuestionBlock
+                  legend={t('missed.q1')}
+                  icon={<HelpCircle className="size-4" />}
+                  error={fieldState.error}
+                >
                   <OptionRadioGroup
                     name="noVisitReason"
                     options={NO_VISIT_REASON_KEYS}
@@ -209,6 +232,7 @@ export function MissedForm() {
           <>
             <QuestionBlock
               legend={t('missed.q2')}
+              icon={<Lightbulb className="size-4" />}
               error={form.formState.errors.answers?.wouldIncrease}
             >
               <OptionCheckboxGroup
@@ -231,7 +255,11 @@ export function MissedForm() {
               control={form.control}
               name="answers.propertyRelevance"
               render={({ field, fieldState }) => (
-                <QuestionBlock legend={t('missed.q3')} error={fieldState.error}>
+                <QuestionBlock
+                  legend={t('missed.q3')}
+                  icon={<Building2 className="size-4" />}
+                  error={fieldState.error}
+                >
                   <OptionRadioGroup
                     name="propertyRelevance"
                     options={PROPERTY_RELEVANCE_KEYS}
@@ -252,7 +280,11 @@ export function MissedForm() {
               control={form.control}
               name="answers.vol2Plan"
               render={({ field, fieldState }) => (
-                <QuestionBlock legend={t('missed.q4')} error={fieldState.error}>
+                <QuestionBlock
+                  legend={t('missed.q4')}
+                  icon={<CalendarDays className="size-4" />}
+                  error={fieldState.error}
+                >
                   <OptionRadioGroup
                     name="vol2Plan"
                     options={VOL2_PLAN_KEYS}
@@ -273,6 +305,7 @@ export function MissedForm() {
             ) : null}
             <QuestionBlock
               legend={t('missed.q5')}
+              icon={<Sparkles className="size-4" />}
               error={form.formState.errors.answers?.vol2Motivation}
             >
               <OptionCheckboxGroup

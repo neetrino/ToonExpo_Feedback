@@ -1,8 +1,10 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { Check, ChevronLeft, ChevronRight, Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 /**
  * Multi-step survey chrome: progress bar and sticky mobile actions.
@@ -33,11 +35,30 @@ export function FormWizard({
   return (
     <div className="scroll-mt-24">
       <div className="mb-7 space-y-3">
-        <div className="flex items-baseline justify-between gap-3">
+        <div className="flex items-center justify-between gap-3">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             {t('step', { current, total })}
           </p>
-          <span className="text-xs font-semibold tabular-nums text-accent">{current}</span>
+          <div className="flex items-center gap-1.5" aria-hidden="true">
+            {Array.from({ length: total }, (_, index) => {
+              const stepNumber = index + 1;
+              const done = stepNumber < current;
+              const active = stepNumber === current;
+              return (
+                <span
+                  key={stepNumber}
+                  className={cn(
+                    'flex size-7 items-center justify-center rounded-full text-[11px] font-semibold',
+                    done && 'bg-accent text-accent-foreground',
+                    active && 'bg-highlight text-primary',
+                    !done && !active && 'bg-muted text-muted-foreground',
+                  )}
+                >
+                  {done ? <Check className="size-3.5" strokeWidth={3} /> : stepNumber}
+                </span>
+              );
+            })}
+          </div>
         </div>
         <div
           className="relative h-2 overflow-hidden rounded-full bg-muted"
@@ -74,6 +95,7 @@ export function FormWizard({
             onClick={onBack}
             disabled={isSubmitting || isFirst}
           >
+            <ChevronLeft className="size-4" aria-hidden="true" />
             {t('prev')}
           </Button>
           {isLast ? (
@@ -85,6 +107,7 @@ export function FormWizard({
               disabled={isSubmitting}
             >
               {isSubmitting ? t('sending') : t('submit')}
+              <Send className="size-4" aria-hidden="true" />
             </Button>
           ) : (
             <Button
@@ -95,6 +118,7 @@ export function FormWizard({
               disabled={isSubmitting}
             >
               {t('next')}
+              <ChevronRight className="size-4" aria-hidden="true" />
             </Button>
           )}
         </div>

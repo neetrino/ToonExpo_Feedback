@@ -1,7 +1,9 @@
+import { CalendarCheck } from 'lucide-react';
+import { BackLink } from '@/components/back-link';
+import { IconBubble } from '@/components/icon-bubble';
 import { PageHero } from '@/components/page-hero';
 import { PageShell } from '@/components/page-shell';
 import { VisitedForm } from '@/components/visited-form';
-import { Link } from '@/i18n/navigation';
 import { parseLocale } from '@/i18n/routing';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
@@ -20,15 +22,13 @@ export default async function VisitedPage({ params }: VisitedPageProps) {
         kicker={t('landing.kicker')}
         title={t('visited.title')}
         intro={t('visited.intro')}
+        icon={
+          <IconBubble>
+            <CalendarCheck className="size-5" />
+          </IconBubble>
+        }
       />
-      <p className="mt-6">
-        <Link
-          href="/"
-          className="text-sm font-medium text-secondary underline-offset-4 hover:text-accent hover:underline"
-        >
-          {t('common.back')}
-        </Link>
-      </p>
+      <BackLink label={t('common.back')} />
       <div className="mt-6">
         <VisitedForm />
       </div>
