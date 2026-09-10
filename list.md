@@ -7,8 +7,8 @@
 - [ ] **5.** Подтвердить `docs/TECH_CARD.md` (сейчас черновик)
 - [x] **6.** Черновик архитектуры `docs/01-ARCHITECTURE.md` — код после утверждения
 - [x] **7.** `.env.example` обновлён; локальный `.env` не коммитить
-- [ ] **8.** Neon dev готов; Google service account = Editor на таблицу
+- [x] **8.** Структура Sheet готова (Visited / Missed). Webhook — вместе с кодом. Neon dev уже есть
 - [ ] **9.** Локально проверить БД и Sheet — после кода
 - [ ] **10.** Quality: Branch Protection, Secret Protection, Dependabot — после scaffold
 
-Код приложения не писать, пока пункт 5 и открытые вопросы клиента (язык, контакты) не закрыты.
+Язык, контакты, вход Visited/Missed, Sheet-webhook и лимиты БД согласованы. Код — после явного старта реализации.

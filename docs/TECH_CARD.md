@@ -6,7 +6,7 @@
 **Проект.** ToonExpo Feedback
 **Размер.** A
 **Дата.** 2026-09-10
-**Статус.** черновик (ждёт подтверждения)
+**Статус.** черновик (ключевые решения закрыты; код после явного старта)
 
 > Статусы: ⬜ не начато · 🔄 предложено / ждёт решения · ✅ готово / согласовано · ➖ не нужно
 
@@ -37,7 +37,7 @@
 | 2.4 | State | `useState` / RHF | 🔄 | Zustand не нужен |
 | 2.5 | Формы | React Hook Form + Zod + Server Action / Route Handler | 🔄 | |
 | 2.6 | Data fetching | Server Components | 🔄 | Публичная форма, почти без чтения |
-| 2.7 | i18n | **открыто у клиента** | 🔄 | Если только `hy` — без next-intl. Если hy/en/ru — next-intl как на Registration |
+| 2.7 | i18n | next-intl: `hy`, `ru` | ✅ | Английский не нужен. Первый визит `hy`, дальше cookie. URL `/hy`, `/ru` |
 | 2.8 | SEO | Metadata API | 🔄 | Индексация не цель; noindex допустим |
 | 2.9 | Тёмная тема | не нужна | 🔄 | Светлая современная страница в цветах логотипа |
 | 2.10 | Анимации | короткие CSS transitions | 🔄 | Без Framer Motion, без градиентов |
@@ -68,10 +68,10 @@
 | 4.1 | СУБД | PostgreSQL на Neon | ✅ | `DATABASE_URL` уже есть у разработчика |
 | 4.2 | ORM | Prisma 7.x | 🔄 | |
 | 4.3 | Роли БД | runtime least-privilege + `DIRECT_URL` только в CI | 🔄 | Настраивается при migrate-on-deploy |
-| 4.4 | Connection limit | **предложение: 5** на инстанс + Neon pooled URL | 🔄 | Адаптивный лимит — нужно согласие |
-| 4.5 | `statement_timeout` | **предложение: 10s** | 🔄 | Только INSERT/UPDATE одной строки |
-| 4.6 | `idle_in_transaction_session_timeout` | **предложение: 10s** | 🔄 | |
-| 4.7 | `lock_timeout` | **предложение: 5s** | 🔄 | |
+| 4.4 | Connection limit | 5 на инстанс + Neon pooled URL | ✅ | Согласовано 2026-09-10 |
+| 4.5 | `statement_timeout` | 10s | ✅ | Согласовано 2026-09-10 |
+| 4.6 | `idle_in_transaction_session_timeout` | 10s | ✅ | Согласовано 2026-09-10 |
+| 4.7 | `lock_timeout` | 5s | ✅ | Согласовано 2026-09-10 |
 | 4.8 | Seed | не нужно | ➖ | |
 | 4.9 | Redis | не нужно | ➖ | |
 | 4.10 | Очереди | не BullMQ; outbox-поля в той же строке + cron | 🔄 | |
@@ -120,7 +120,7 @@ Cron-эндпоинт защищается секретом `CRON_SECRET`, не 
 | 7.8 | AI | не нужно | ➖ | |
 | 7.9 | CMS | не нужно | ➖ | |
 | 7.10 | Карты | не нужно | ➖ | |
-| 7.11 | Google Sheets | Sheets API + service account | 🔄 | Таблица [1nGBUK_Do0MZZ-RzN4MSeJpFuJ-RpQUzrgnDTdBkVJBY](https://docs.google.com/spreadsheets/d/1nGBUK_Do0MZZ-RzN4MSeJpFuJ-RpQUzrgnDTdBkVJBY/edit?usp=sharing). Публичной ссылки мало — нужен **Editor** для service account. См. `GOOGLE-SHEETS.md` |
+| 7.11 | Google Sheets | Apps Script webhook | ✅ | Без Google Cloud и JSON-ключа. Одна секретная ссылка + секрет в env. Таблица [1nGBUK_Do0MZZ-RzN4MSeJpFuJ-RpQUzrgnDTdBkVJBY](https://docs.google.com/spreadsheets/d/1nGBUK_Do0MZZ-RzN4MSeJpFuJ-RpQUzrgnDTdBkVJBY/edit?usp=sharing). См. `GOOGLE-SHEETS.md` |
 
 ---
 
@@ -164,7 +164,8 @@ Cron-эндпоинт защищается секретом `CRON_SECRET`, не 
 | 10.4 | Валидация входа | 🔄 | Zod, лимиты длины текста |
 | 10.5 | argon2 | ➖ | Паролей нет |
 | 10.6 | Rate limiting | 🔄 | Минимальный: honeypot + WAF. Без сложной капчи в v1 |
-| 10.7 | Секреты только в env | 🔄 | `DATABASE_URL`, Google key, `CRON_SECRET` |
+| 10.7 | Секреты только в env | 🔄 | `DATABASE_URL`, `SHEETS_WEBHOOK_URL`, `SHEETS_WEBHOOK_SECRET`, `CRON_SECRET` |
+| 10.8 | PII | 🔄 | Имя, фамилия, телефон, email в БД и Sheet. Не логировать целиком. Не делать email/телефон уникальными |
 
 ---
 
@@ -230,21 +231,36 @@ Cron-эндпоинт защищается секретом `CRON_SECRET`, не 
 
 ---
 
+## Персональные данные
+
+Согласовано 2026-09-10. Поля как у ToonExpo Registration, блок в начале обеих анкет, все обязательные:
+
+| Поле | Хранение | Заметка |
+|------|----------|---------|
+| `firstName` | text | |
+| `lastName` | text | |
+| `email` + `emailNormalized` | text | Валидация формата; не уникальный |
+| `phone` + `phoneNormalized` | text | Как на Registration; не уникальный |
+
+Английский UI не делаем. Локаль ответа (`hy` / `ru`) пишем в строку.
+
+---
+
 ## Открытые решения (блокеры кода)
 
-1. **Язык(и) формы** — ждём клиента.
-2. **Контакты** (имя / телефон / email) — в анкете нет; ждём клиента.
-3. **Как выбрать анкету** — предложение: две кнопки на `/`. Нужно «ок».
-4. **Лимиты БД** (4.4–4.7) — предложены значения выше, нужно согласие.
-5. **Google service account** — публичной ссылки недостаточно; нужен Editor на email сервис-аккаунта.
+1. ~~Язык~~ — `hy` + `ru`, без `en`.
+2. ~~Контакты~~ — имя, фамилия, телефон, email, обязательные.
+3. ~~Вход в анкету~~ — две карточки на главной, затем `/visited` или `/missed`.
+4. ~~Лимиты БД~~ — pool 5, statement/idle 10s, lock 5s.
+5. ~~Google Cloud / service account~~ — не берём. Webhook Apps Script заводим вместе с кодом.
 
 ---
 
 ## Итог
 
-**Пунктов всего.** 79 учитываемых (1–11)
-**Согласовано владельцем.** 1.1, 4.1 (Neon есть), 8.1, 8.9
-**Не нужно.** 1.6, 2.11, 3.5, 3.7, 4.8–4.9, весь 5, 6.1, 7.1–7.10 кроме 7.11, 8.2, 8.4, 9.2, 9.5, 10.3, 10.5
-**Обсудить / подтвердить.** остальное, особенно блокеры выше
+**Пунктов всего.** 80 учитываемых (1–11 + PII)
+**Согласовано владельцем.** 1.1, 2.7, 4.1, 7.11, 8.1, 8.9, персональные данные, вход Visited/Missed
+**Не нужно.** 1.6, 2.11, 3.5, 3.7, 4.8–4.9, весь 5, 6.1, 7.1–7.10 кроме 7.11, 8.2, 8.4, 9.2, 9.5, 10.3, 10.5, английский, Google Cloud service account
+**Обсудить / подтвердить.** — (лимиты БД закрыты)
 
 > Старт кода: подтвердить карту, закрыть блокеры, сменить статус на **утверждена**.

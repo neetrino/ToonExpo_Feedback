@@ -17,14 +17,15 @@
 
 ### Возможности
 
-- Лендинг и две формы с условными полями
+- Лендинг и две формы с условными полями (`/hy`, `/ru`)
+- Обязательные контакты: имя, фамилия, телефон, email
 - `POST` только на сервере (секреты не в браузере)
 - Outbox-статус синхронизации Sheet + cron-повтор
 - Минимальная антибот-защита без Redis и без капчи
 
 ### Роли
 
-- **Респондент.** Открывает `feedback.toonexpo.com`, выбирает тип визита, отправляет форму.
+- **Респондент.** Открывает `feedback.toonexpo.com` (по умолчанию `/hy`), при необходимости переключает на русский, указывает контакты, выбирает тип визита, отправляет форму.
 - **Команда ToonExpo.** Смотрит Sheet (и при необходимости Neon). Вход в приложение не нужен.
 
 ---
@@ -37,7 +38,7 @@
     ▼
 ┌─────────────────────────────┐
 │  Next.js на Vercel          │
-│  /  /visited  /missed       │
+│  /hy /ru + /visited /missed │
 │  POST /api/feedback         │
 └─────────────┬───────────────┘
               │ 1. Zod validate
@@ -46,7 +47,7 @@
               │ 4. after() / cron: append Sheet
               ▼
      ┌────────────────┐     ┌─────────────────────┐
-     │ Neon PostgreSQL│     │ Google Sheets API   │
+     │ Neon PostgreSQL│     │ Apps Script webhook │
      │ (источник)     │────▶│ Visited | Missed    │
      └────────────────┘     └─────────────────────┘
 ```
@@ -86,20 +87,24 @@
 ```
 src/
   app/
-    page.tsx                 # выбор: был / не был
-    visited/page.tsx
-    missed/page.tsx
-    thanks/page.tsx
+    [locale]/
+      page.tsx               # выбор: был / не был
+      visited/page.tsx
+      missed/page.tsx
+      thanks/page.tsx
     api/feedback/route.ts    # POST
     api/cron/sheets-sync/route.ts
     api/health/route.ts
-  components/                # UI формы, шкалы 1–10, чекбоксы
+  components/
   lib/
     db.ts
-    feedback-schema.ts       # Zod
+    feedback-schema.ts
     sheets.ts
     logger.ts
   types/
+messages/
+  hy.json
+  ru.json
 prisma/
   schema.prisma
 docs/
@@ -107,10 +112,11 @@ docs/
 
 | Папка | Назначение |
 |-------|------------|
-| `src/app/` | Страницы и API |
+| `src/app/[locale]/` | Страницы hy/ru |
+| `src/app/api/` | POST и cron |
 | `src/components/` | UI |
 | `src/lib/` | БД, Sheets, валидация |
-| `src/types/` | Общие типы |
+| `messages/` | Каталоги `hy.json`, `ru.json` |
 | `prisma/` | Схема и миграции |
 
 Feature-папок Size B нет.
@@ -154,16 +160,20 @@ Feature-папок Size B нет.
 |------|-----|---------|
 | `id` | uuid | |
 | `audience` | `VISITED` \| `MISSED` | Какая анкета |
-| `answers` | jsonb | Нормализованные ключи вопросов |
-| `locale` | text | Когда будет известен язык |
+| `firstName` | text | обязательно |
+| `lastName` | text | обязательно |
+| `email` | text | обязательно, не уникальный |
+| `emailNormalized` | text | lower/trim |
+| `phone` | text | обязательно, не уникальный |
+| `phoneNormalized` | text | как на Registration |
+| `answers` | jsonb | ключи вопросов, без дубля контактов |
+| `locale` | `hy` \| `ru` | язык, на котором отправили |
 | `sheetSyncStatus` | `pending` \| `synced` \| `failed` | |
 | `sheetSyncedAt` | timestamptz? | |
-| `sheetError` | text? | Коротко, без секретов |
+| `sheetError` | text? | коротко, без секретов и без PII |
 | `createdAt` | timestamptz | |
 
-Контактные колонки не закладываем, пока клиент не попросит.
-
-Индекс: `(sheetSyncStatus, createdAt)` для cron. Индекс по `createdAt` для выборок.
+Индекс: `(sheetSyncStatus, createdAt)` для cron. Индекс по `createdAt`. Индексы по `emailNormalized` и `phoneNormalized` для поиска в БД, **без unique**.
 
 Идемпотентность v1: достаточно honeypot + UX disable кнопки. Ключ идемпотентности можно добавить, если клиент даст персональную ссылку.
 
@@ -192,7 +202,7 @@ Feature-папок Size B нет.
 | Сервис | Зачем | Документ |
 |--------|-------|----------|
 | Neon | Хранение ответов | этот файл, TECH_CARD §4 |
-| Google Sheets | Копия для команды | [`GOOGLE-SHEETS.md`](./GOOGLE-SHEETS.md) |
+| Google Sheets | Копия для команды через Apps Script webhook | [`GOOGLE-SHEETS.md`](./GOOGLE-SHEETS.md) |
 | ToonExpo Registration | Только логотип и палитра | [репозиторий](https://github.com/neetrino/ToonExpo_Registration) |
 
 Нет: Resend, Dexatel, R2, Redis, Auth.js, Mootq.
@@ -203,10 +213,11 @@ Feature-папок Size B нет.
 
 - HTTPS, свой origin
 - Секреты только в env (БД, Google JSON/key, cron)
-- Валидация Zod, лимиты строк
+- Валидация Zod: контакты + ответы, лимиты строк
 - Honeypot-поле, скрытое от людей
-- Не логировать полный текст ответов и ключи
-- Service account — **Editor** только на эту таблицу, не Viewer и не «anyone can edit»
+- Не логировать полные email/телефон/ответы и ключи
+- Webhook Apps Script и его секрет только в env, не в браузере
+- Sheet содержит PII: не делать таблицу «anyone with the link can edit»
 
 ---
 
@@ -241,9 +252,12 @@ Feature-папок Size B нет.
 | Размер | A | Одна форма, нет админки |
 | Хост | Vercel + Next.js | Подтверждено, как Registration |
 | БД | Neon + Prisma | Уже есть, стандарт |
-| Sheet | API + service account, после БД | Публичная ссылка не пишет; Sheet может подождать |
+| Sheet | Apps Script webhook после БД | Без Cloud API; URL webhook = секрет |
+| Вход | Две карточки → `/visited` или `/missed` | Одна рассылка или два разных URL |
 | Антибот | Honeypot + валидация | Без сложной капчи |
 | Auth | Нет | Админки нет |
+| i18n | `hy`, `ru` | Английский не нужен |
+| Контакты | имя, фамилия, телефон, email | Обязательные, как Registration |
 
 ---
 

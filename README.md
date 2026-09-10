@@ -1,6 +1,6 @@
 # ToonExpo Feedback
 
-Публичная форма обратной связи **TOON EXPO · INVEST 2026**. Ответы пишутся в Neon и копируются в Google Sheet. Админки нет.
+Публичная форма обратной связи **TOON EXPO · INVEST 2026**. Интерфейс на армянском и русском. Ответы и контакты пишутся в Neon и копируются в Google Sheet. Админки нет.
 
 Сайт: `feedback.toonexpo.com`
 
@@ -35,7 +35,7 @@ pnpm dev
 См. [`.env.example`](.env.example). Нужны:
 
 - `DATABASE_URL` — Neon **dev** (pooled)
-- Google service account с ролью **Editor** на таблицу (публичной ссылки недостаточно)
+- `SHEETS_WEBHOOK_URL` + `SHEETS_WEBHOOK_SECRET` — Apps Script в той же таблице (без Google Cloud)
 - `CRON_SECRET` — для догона Sheet
 
 Не подключаем в v1: Redis, Resend, R2, Auth.
