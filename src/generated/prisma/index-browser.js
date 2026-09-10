@@ -123,12 +123,6 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.FeedbackSubmissionScalarFieldEnum = {
   id: 'id',
   audience: 'audience',
-  firstName: 'firstName',
-  lastName: 'lastName',
-  email: 'email',
-  emailNormalized: 'emailNormalized',
-  phone: 'phone',
-  phoneNormalized: 'phoneNormalized',
   answers: 'answers',
   locale: 'locale',
   sheetSyncStatus: 'sheetSyncStatus',

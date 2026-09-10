@@ -4,7 +4,7 @@
 
 Spreadsheet ID: `1nGBUK_Do0MZZ-RzN4MSeJpFuJ-RpQUzrgnDTdBkVJBY`
 
-Структура создана 2026-09-10: листы `Visited` и `Missed`, шапка в первой строке. Скрипт вебхука лежит в репозитории; URL и секрет в env появятся после деплоя Web App.
+Структура создана 2026-09-10: листы `Visited` и `Missed`, шапка в первой строке. Контактов в таблице нет. Если в шапке ещё стоят `first_name` / `last_name` / `email` / `phone` — удалите эти колонки. Скрипт вебхука лежит в репозитории; URL и секрет в env появятся после деплоя Web App.
 
 ---
 
@@ -79,10 +79,6 @@ SHEETS_WEBHOOK_SECRET=""
 |---------|--------|
 | `submitted_at` | Время (ISO) |
 | `id` | UUID из Neon |
-| `first_name` | Имя |
-| `last_name` | Фамилия |
-| `email` | Email |
-| `phone` | Телефон |
 | `locale` | `hy` или `ru` |
 | `problems` | Q1, несколько, через ` \| ` |
 | `problems_org_detail` | Текст, если выбрали орг. проблему |
@@ -108,10 +104,6 @@ SHEETS_WEBHOOK_SECRET=""
 |---------|--------|
 | `submitted_at` | Время (ISO) |
 | `id` | UUID из Neon |
-| `first_name` | Имя |
-| `last_name` | Фамилия |
-| `email` | Email |
-| `phone` | Телефон |
 | `locale` | `hy` или `ru` |
 | `no_visit_reason` | Q1 |
 | `no_visit_other` | Текст «Другое» |

@@ -40,12 +40,6 @@ export async function saveFeedback(payload: FeedbackPayload): Promise<{ id: stri
   const created = await prisma.feedbackSubmission.create({
     data: {
       audience: payload.audience,
-      firstName: payload.firstName,
-      lastName: payload.lastName,
-      email: payload.email,
-      emailNormalized: payload.email,
-      phone: payload.phone,
-      phoneNormalized: payload.phone,
       answers: sanitizeAnswers(payload),
       locale: payload.locale,
     },

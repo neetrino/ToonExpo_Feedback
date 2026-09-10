@@ -5,18 +5,10 @@ import {
   visitedPayloadSchema,
 } from '@/lib/feedback-schema';
 
-const contact = {
-  firstName: 'Ani',
-  lastName: 'Sargsyan',
-  email: 'Ani@Example.com',
-  phone: '+37499123456',
-  website: '',
-};
-
 const visitedBase = {
   audience: 'VISITED' as const,
   locale: 'hy' as const,
-  ...contact,
+  website: '',
   answers: {
     problems: ['parking'] as const,
     problemsOrgDetail: '',
@@ -35,7 +27,7 @@ const visitedBase = {
 const missedBase = {
   audience: 'MISSED' as const,
   locale: 'ru' as const,
-  ...contact,
+  website: '',
   answers: {
     noVisitReason: 'no_time' as const,
     noVisitOther: '',
@@ -50,10 +42,10 @@ const missedBase = {
 };
 
 describe('visitedPayloadSchema', () => {
-  it('accepts a complete visited payload and normalizes email', () => {
+  it('accepts a complete visited payload', () => {
     const parsed = visitedPayloadSchema.parse(visitedBase);
-    expect(parsed.email).toBe('ani@example.com');
-    expect(parsed.phone).toBe('+37499123456');
+    expect(parsed.audience).toBe('VISITED');
+    expect(parsed.answers.problems).toEqual(['parking']);
   });
 
   it('rejects no_problems together with another problem', () => {
@@ -138,13 +130,6 @@ describe('visitedPayloadSchema', () => {
     expect(parsed.answers.b2bDetail).toBe('');
   });
 
-  it('rejects an invalid Armenian phone number', () => {
-    const result = visitedPayloadSchema.safeParse({
-      ...visitedBase,
-      phone: '123',
-    });
-    expect(result.success).toBe(false);
-  });
 });
 
 describe('missedPayloadSchema', () => {

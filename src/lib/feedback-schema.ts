@@ -14,27 +14,11 @@ import {
   showsB2bQuestion,
   showsPropertyQuestion,
 } from '@/lib/feedback-options';
-import { clipName, clipText, normalizeEmail, normalizePhone } from '@/lib/normalize';
+import { clipText } from '@/lib/normalize';
 
 const localeSchema = z.enum(['hy', 'ru']);
 
-const contactFields = {
-  firstName: z.string().trim().min(1).max(80).transform(clipName),
-  lastName: z.string().trim().min(1).max(80).transform(clipName),
-  email: z.string().trim().email().max(120).transform(normalizeEmail),
-  phone: z
-    .string()
-    .trim()
-    .min(6)
-    .max(32)
-    .transform((value, ctx) => {
-      try {
-        return normalizePhone(value);
-      } catch {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'invalid_phone' });
-        return z.NEVER;
-      }
-    }),
+const honeypotFields = {
   website: z.string().max(120).optional().default(''),
 };
 
@@ -189,14 +173,14 @@ export const missedAnswersSchema = z
 export const visitedPayloadSchema = z.object({
   audience: z.literal('VISITED'),
   locale: localeSchema,
-  ...contactFields,
+  ...honeypotFields,
   answers: visitedAnswersSchema,
 });
 
 export const missedPayloadSchema = z.object({
   audience: z.literal('MISSED'),
   locale: localeSchema,
-  ...contactFields,
+  ...honeypotFields,
   answers: missedAnswersSchema,
 });
 

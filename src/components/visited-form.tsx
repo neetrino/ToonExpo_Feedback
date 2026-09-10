@@ -5,21 +5,16 @@ import {
   CalendarDays,
   CircleAlert,
   Handshake,
-  Mail,
-  Phone,
   Sparkles,
   Target,
-  User,
-  UserRound,
 } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Controller, useForm, useWatch, type FieldPath } from 'react-hook-form';
-import { QuestionBlock, ScoreField, TextAreaField, TextField } from '@/components/form-fields';
+import { QuestionBlock, ScoreField, TextAreaField } from '@/components/form-fields';
 import { OptionCheckboxGroup, OptionRadioGroup } from '@/components/form-option-groups';
 import { FormWizard } from '@/components/form-wizard';
-import { IconBubble } from '@/components/icon-bubble';
 import { useRouter } from '@/i18n/navigation';
 import {
   B2B_OUTCOME_KEYS,
@@ -36,9 +31,9 @@ import {
   type WantKey,
 } from '@/lib/feedback-options';
 import { visitedPayloadSchema, type VisitedFormValues } from '@/lib/feedback-schema';
+import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
 
 const VISITED_STEP_FIELDS: FieldPath<VisitedFormValues>[][] = [
-  ['firstName', 'lastName', 'email', 'phone'],
   ['answers.problems', 'answers.problemsOrgDetail'],
   [
     'answers.visitGoals',
@@ -64,10 +59,6 @@ export function VisitedForm() {
     defaultValues: {
       audience: 'VISITED',
       locale: locale === 'ru' ? 'ru' : 'hy',
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
       website: '',
       answers: {
         problems: [],
@@ -165,7 +156,7 @@ export function VisitedForm() {
           void goNext();
           return;
         }
-        void form.handleSubmit(onSubmit)(event);
+        void form.handleSubmit(onSubmit, scrollToFirstInvalidField)(event);
       }}
       noValidate
     >
@@ -180,56 +171,6 @@ export function VisitedForm() {
         }}
       >
         {step === 0 ? (
-          <section className="grid gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2 flex items-center gap-3">
-              <IconBubble>
-                <UserRound className="size-5" />
-              </IconBubble>
-              <h2 className="font-display text-xl font-semibold">{t('contact.title')}</h2>
-            </div>
-            <TextField
-              label={t('contact.firstName')}
-              autoComplete="given-name"
-              icon={<User className="size-4" />}
-              registration={form.register('firstName')}
-              error={form.formState.errors.firstName}
-            />
-            <TextField
-              label={t('contact.lastName')}
-              autoComplete="family-name"
-              icon={<UserRound className="size-4" />}
-              registration={form.register('lastName')}
-              error={form.formState.errors.lastName}
-            />
-            <TextField
-              label={t('contact.email')}
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              icon={<Mail className="size-4" />}
-              registration={form.register('email')}
-              error={form.formState.errors.email}
-            />
-            <TextField
-              label={t('contact.phone')}
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              placeholder="+374…"
-              icon={<Phone className="size-4" />}
-              registration={form.register('phone')}
-              error={form.formState.errors.phone}
-            />
-            <input
-              className="hidden"
-              tabIndex={-1}
-              autoComplete="off"
-              {...form.register('website')}
-            />
-          </section>
-        ) : null}
-
-        {step === 1 ? (
           <>
             <QuestionBlock
               legend={t('visited.q1')}
@@ -252,10 +193,16 @@ export function VisitedForm() {
                 error={form.formState.errors.answers?.problemsOrgDetail}
               />
             ) : null}
+            <input
+              className="hidden"
+              tabIndex={-1}
+              autoComplete="off"
+              {...form.register('website')}
+            />
           </>
         ) : null}
 
-        {step === 2 ? (
+        {step === 1 ? (
           <>
             <QuestionBlock
               legend={t('visited.q2')}
@@ -343,7 +290,7 @@ export function VisitedForm() {
           </>
         ) : null}
 
-        {step === 3 ? (
+        {step === 2 ? (
           <>
             <Controller
               control={form.control}
@@ -383,7 +330,7 @@ export function VisitedForm() {
           </>
         ) : null}
 
-        {step === 4 ? (
+        {step === 3 ? (
           <>
             <Controller
               control={form.control}

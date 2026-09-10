@@ -9,10 +9,6 @@ describe('toSheetRow', () => {
     const payload = feedbackPayloadSchema.parse({
       audience: 'VISITED',
       locale: 'hy',
-      firstName: 'Ani',
-      lastName: 'Sargsyan',
-      email: 'ani@example.com',
-      phone: '+37499123456',
       website: '',
       answers: {
         problems: ['parking', 'navigation'],
@@ -34,10 +30,6 @@ describe('toSheetRow', () => {
     expect(row.values).toEqual([
       '2026-09-10T12:00:00.000Z',
       '11111111-1111-1111-1111-111111111111',
-      'Ani',
-      'Sargsyan',
-      'ani@example.com',
-      '+37499123456',
       'hy',
       'parking | navigation',
       '',
@@ -61,10 +53,6 @@ describe('toSheetRow', () => {
     const payload = feedbackPayloadSchema.parse({
       audience: 'MISSED',
       locale: 'ru',
-      firstName: 'Ivan',
-      lastName: 'Petrov',
-      email: 'ivan@example.com',
-      phone: '+37499123456',
       website: '',
       answers: {
         noVisitReason: 'other',
@@ -84,10 +72,6 @@ describe('toSheetRow', () => {
     expect(row.values).toEqual([
       '2026-09-10T12:00:00.000Z',
       '22222222-2222-2222-2222-222222222222',
-      'Ivan',
-      'Petrov',
-      'ivan@example.com',
-      '+37499123456',
       'ru',
       'other',
       'Family',

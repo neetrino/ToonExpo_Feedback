@@ -38,7 +38,7 @@ export function PageHero({
         </p>
       ) : null}
       <div
-        className={cn('mt-5 h-1 w-12 rounded-full bg-highlight', centered && 'mx-auto')}
+        className={cn('mt-5 h-1 w-12 rounded-full bg-accent', centered && 'mx-auto')}
         aria-hidden="true"
       />
     </div>

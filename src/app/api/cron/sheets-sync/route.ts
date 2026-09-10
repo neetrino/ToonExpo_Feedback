@@ -10,19 +10,11 @@ const BATCH_SIZE = 25;
 
 function toPayload(row: {
   audience: 'VISITED' | 'MISSED';
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
   locale: string;
   answers: Prisma.JsonValue;
 }) {
   return feedbackPayloadSchema.parse({
     audience: row.audience,
-    firstName: row.firstName,
-    lastName: row.lastName,
-    email: row.email,
-    phone: row.phone,
     locale: row.locale === 'ru' ? 'ru' : 'hy',
     website: '',
     answers: row.answers,

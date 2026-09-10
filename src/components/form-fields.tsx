@@ -13,7 +13,7 @@ export function FieldErrorText({ error }: { error?: FieldIssue }) {
   if (!error) {
     return null;
   }
-  const key = error.message === 'invalid_phone' ? 'invalidPhone' : 'required';
+  const key = 'required';
   return (
     <p className="mt-1.5 text-sm text-destructive" role="alert">
       {t(key)}
@@ -23,52 +23,6 @@ export function FieldErrorText({ error }: { error?: FieldIssue }) {
 
 const controlClassName =
   'w-full min-h-12 rounded-2xl border bg-card px-4 py-3 text-base outline-none ring-offset-background transition-[border-color,box-shadow] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
-
-export function TextField({
-  label,
-  registration,
-  error,
-  type = 'text',
-  autoComplete,
-  inputMode,
-  placeholder,
-  icon,
-}: {
-  label: string;
-  registration: UseFormRegisterReturn;
-  error?: FieldIssue;
-  type?: 'text' | 'email' | 'tel';
-  autoComplete?: string;
-  inputMode?: 'text' | 'email' | 'tel';
-  placeholder?: string;
-  icon?: ReactNode;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-medium">{label}</span>
-      <span className="relative block">
-        {icon ? (
-          <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-accent">
-            {icon}
-          </span>
-        ) : null}
-        <input
-          type={type}
-          autoComplete={autoComplete}
-          inputMode={inputMode}
-          placeholder={placeholder}
-          className={cn(
-            controlClassName,
-            icon && 'pl-11',
-            error ? 'border-destructive' : 'border-input',
-          )}
-          {...registration}
-        />
-      </span>
-      <FieldErrorText error={error} />
-    </label>
-  );
-}
 
 export function TextAreaField({
   label,

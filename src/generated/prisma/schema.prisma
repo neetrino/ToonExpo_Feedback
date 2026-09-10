@@ -25,12 +25,6 @@ enum SheetSyncStatus {
 model FeedbackSubmission {
   id              String          @id @default(uuid()) @db.Uuid
   audience        Audience
-  firstName       String
-  lastName        String
-  email           String
-  emailNormalized String
-  phone           String
-  phoneNormalized String
   answers         Json
   locale          String
   sheetSyncStatus SheetSyncStatus @default(pending)
@@ -40,6 +34,4 @@ model FeedbackSubmission {
 
   @@index([sheetSyncStatus, createdAt])
   @@index([createdAt])
-  @@index([emailNormalized])
-  @@index([phoneNormalized])
 }

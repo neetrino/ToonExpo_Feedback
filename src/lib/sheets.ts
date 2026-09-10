@@ -13,10 +13,6 @@ function visitedRow(id: string, submittedAt: string, payload: FeedbackPayload): 
   return [
     submittedAt,
     id,
-    payload.firstName,
-    payload.lastName,
-    payload.email,
-    payload.phone,
     payload.locale,
     joinSheetList(answers.problems),
     clipText(answers.problemsOrgDetail),
@@ -41,10 +37,6 @@ function missedRow(id: string, submittedAt: string, payload: FeedbackPayload): s
   return [
     submittedAt,
     id,
-    payload.firstName,
-    payload.lastName,
-    payload.email,
-    payload.phone,
     payload.locale,
     answers.noVisitReason,
     clipText(answers.noVisitOther),

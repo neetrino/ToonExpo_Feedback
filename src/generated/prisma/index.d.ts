@@ -937,12 +937,6 @@ export namespace Prisma {
   export type FeedbackSubmissionMinAggregateOutputType = {
     id: string | null
     audience: $Enums.Audience | null
-    firstName: string | null
-    lastName: string | null
-    email: string | null
-    emailNormalized: string | null
-    phone: string | null
-    phoneNormalized: string | null
     locale: string | null
     sheetSyncStatus: $Enums.SheetSyncStatus | null
     sheetSyncedAt: Date | null
@@ -953,12 +947,6 @@ export namespace Prisma {
   export type FeedbackSubmissionMaxAggregateOutputType = {
     id: string | null
     audience: $Enums.Audience | null
-    firstName: string | null
-    lastName: string | null
-    email: string | null
-    emailNormalized: string | null
-    phone: string | null
-    phoneNormalized: string | null
     locale: string | null
     sheetSyncStatus: $Enums.SheetSyncStatus | null
     sheetSyncedAt: Date | null
@@ -969,12 +957,6 @@ export namespace Prisma {
   export type FeedbackSubmissionCountAggregateOutputType = {
     id: number
     audience: number
-    firstName: number
-    lastName: number
-    email: number
-    emailNormalized: number
-    phone: number
-    phoneNormalized: number
     answers: number
     locale: number
     sheetSyncStatus: number
@@ -988,12 +970,6 @@ export namespace Prisma {
   export type FeedbackSubmissionMinAggregateInputType = {
     id?: true
     audience?: true
-    firstName?: true
-    lastName?: true
-    email?: true
-    emailNormalized?: true
-    phone?: true
-    phoneNormalized?: true
     locale?: true
     sheetSyncStatus?: true
     sheetSyncedAt?: true
@@ -1004,12 +980,6 @@ export namespace Prisma {
   export type FeedbackSubmissionMaxAggregateInputType = {
     id?: true
     audience?: true
-    firstName?: true
-    lastName?: true
-    email?: true
-    emailNormalized?: true
-    phone?: true
-    phoneNormalized?: true
     locale?: true
     sheetSyncStatus?: true
     sheetSyncedAt?: true
@@ -1020,12 +990,6 @@ export namespace Prisma {
   export type FeedbackSubmissionCountAggregateInputType = {
     id?: true
     audience?: true
-    firstName?: true
-    lastName?: true
-    email?: true
-    emailNormalized?: true
-    phone?: true
-    phoneNormalized?: true
     answers?: true
     locale?: true
     sheetSyncStatus?: true
@@ -1110,12 +1074,6 @@ export namespace Prisma {
   export type FeedbackSubmissionGroupByOutputType = {
     id: string
     audience: $Enums.Audience
-    firstName: string
-    lastName: string
-    email: string
-    emailNormalized: string
-    phone: string
-    phoneNormalized: string
     answers: JsonValue
     locale: string
     sheetSyncStatus: $Enums.SheetSyncStatus
@@ -1144,12 +1102,6 @@ export namespace Prisma {
   export type FeedbackSubmissionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     audience?: boolean
-    firstName?: boolean
-    lastName?: boolean
-    email?: boolean
-    emailNormalized?: boolean
-    phone?: boolean
-    phoneNormalized?: boolean
     answers?: boolean
     locale?: boolean
     sheetSyncStatus?: boolean
@@ -1161,12 +1113,6 @@ export namespace Prisma {
   export type FeedbackSubmissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     audience?: boolean
-    firstName?: boolean
-    lastName?: boolean
-    email?: boolean
-    emailNormalized?: boolean
-    phone?: boolean
-    phoneNormalized?: boolean
     answers?: boolean
     locale?: boolean
     sheetSyncStatus?: boolean
@@ -1178,12 +1124,6 @@ export namespace Prisma {
   export type FeedbackSubmissionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     audience?: boolean
-    firstName?: boolean
-    lastName?: boolean
-    email?: boolean
-    emailNormalized?: boolean
-    phone?: boolean
-    phoneNormalized?: boolean
     answers?: boolean
     locale?: boolean
     sheetSyncStatus?: boolean
@@ -1195,12 +1135,6 @@ export namespace Prisma {
   export type FeedbackSubmissionSelectScalar = {
     id?: boolean
     audience?: boolean
-    firstName?: boolean
-    lastName?: boolean
-    email?: boolean
-    emailNormalized?: boolean
-    phone?: boolean
-    phoneNormalized?: boolean
     answers?: boolean
     locale?: boolean
     sheetSyncStatus?: boolean
@@ -1209,7 +1143,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type FeedbackSubmissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "audience" | "firstName" | "lastName" | "email" | "emailNormalized" | "phone" | "phoneNormalized" | "answers" | "locale" | "sheetSyncStatus" | "sheetSyncedAt" | "sheetError" | "createdAt", ExtArgs["result"]["feedbackSubmission"]>
+  export type FeedbackSubmissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "audience" | "answers" | "locale" | "sheetSyncStatus" | "sheetSyncedAt" | "sheetError" | "createdAt", ExtArgs["result"]["feedbackSubmission"]>
 
   export type $FeedbackSubmissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "FeedbackSubmission"
@@ -1217,12 +1151,6 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       audience: $Enums.Audience
-      firstName: string
-      lastName: string
-      email: string
-      emailNormalized: string
-      phone: string
-      phoneNormalized: string
       answers: Prisma.JsonValue
       locale: string
       sheetSyncStatus: $Enums.SheetSyncStatus
@@ -1654,12 +1582,6 @@ export namespace Prisma {
   interface FeedbackSubmissionFieldRefs {
     readonly id: FieldRef<"FeedbackSubmission", 'String'>
     readonly audience: FieldRef<"FeedbackSubmission", 'Audience'>
-    readonly firstName: FieldRef<"FeedbackSubmission", 'String'>
-    readonly lastName: FieldRef<"FeedbackSubmission", 'String'>
-    readonly email: FieldRef<"FeedbackSubmission", 'String'>
-    readonly emailNormalized: FieldRef<"FeedbackSubmission", 'String'>
-    readonly phone: FieldRef<"FeedbackSubmission", 'String'>
-    readonly phoneNormalized: FieldRef<"FeedbackSubmission", 'String'>
     readonly answers: FieldRef<"FeedbackSubmission", 'Json'>
     readonly locale: FieldRef<"FeedbackSubmission", 'String'>
     readonly sheetSyncStatus: FieldRef<"FeedbackSubmission", 'SheetSyncStatus'>
@@ -2054,12 +1976,6 @@ export namespace Prisma {
   export const FeedbackSubmissionScalarFieldEnum: {
     id: 'id',
     audience: 'audience',
-    firstName: 'firstName',
-    lastName: 'lastName',
-    email: 'email',
-    emailNormalized: 'emailNormalized',
-    phone: 'phone',
-    phoneNormalized: 'phoneNormalized',
     answers: 'answers',
     locale: 'locale',
     sheetSyncStatus: 'sheetSyncStatus',
@@ -2209,12 +2125,6 @@ export namespace Prisma {
     NOT?: FeedbackSubmissionWhereInput | FeedbackSubmissionWhereInput[]
     id?: UuidFilter<"FeedbackSubmission"> | string
     audience?: EnumAudienceFilter<"FeedbackSubmission"> | $Enums.Audience
-    firstName?: StringFilter<"FeedbackSubmission"> | string
-    lastName?: StringFilter<"FeedbackSubmission"> | string
-    email?: StringFilter<"FeedbackSubmission"> | string
-    emailNormalized?: StringFilter<"FeedbackSubmission"> | string
-    phone?: StringFilter<"FeedbackSubmission"> | string
-    phoneNormalized?: StringFilter<"FeedbackSubmission"> | string
     answers?: JsonFilter<"FeedbackSubmission">
     locale?: StringFilter<"FeedbackSubmission"> | string
     sheetSyncStatus?: EnumSheetSyncStatusFilter<"FeedbackSubmission"> | $Enums.SheetSyncStatus
@@ -2226,12 +2136,6 @@ export namespace Prisma {
   export type FeedbackSubmissionOrderByWithRelationInput = {
     id?: SortOrder
     audience?: SortOrder
-    firstName?: SortOrder
-    lastName?: SortOrder
-    email?: SortOrder
-    emailNormalized?: SortOrder
-    phone?: SortOrder
-    phoneNormalized?: SortOrder
     answers?: SortOrder
     locale?: SortOrder
     sheetSyncStatus?: SortOrder
@@ -2246,12 +2150,6 @@ export namespace Prisma {
     OR?: FeedbackSubmissionWhereInput[]
     NOT?: FeedbackSubmissionWhereInput | FeedbackSubmissionWhereInput[]
     audience?: EnumAudienceFilter<"FeedbackSubmission"> | $Enums.Audience
-    firstName?: StringFilter<"FeedbackSubmission"> | string
-    lastName?: StringFilter<"FeedbackSubmission"> | string
-    email?: StringFilter<"FeedbackSubmission"> | string
-    emailNormalized?: StringFilter<"FeedbackSubmission"> | string
-    phone?: StringFilter<"FeedbackSubmission"> | string
-    phoneNormalized?: StringFilter<"FeedbackSubmission"> | string
     answers?: JsonFilter<"FeedbackSubmission">
     locale?: StringFilter<"FeedbackSubmission"> | string
     sheetSyncStatus?: EnumSheetSyncStatusFilter<"FeedbackSubmission"> | $Enums.SheetSyncStatus
@@ -2263,12 +2161,6 @@ export namespace Prisma {
   export type FeedbackSubmissionOrderByWithAggregationInput = {
     id?: SortOrder
     audience?: SortOrder
-    firstName?: SortOrder
-    lastName?: SortOrder
-    email?: SortOrder
-    emailNormalized?: SortOrder
-    phone?: SortOrder
-    phoneNormalized?: SortOrder
     answers?: SortOrder
     locale?: SortOrder
     sheetSyncStatus?: SortOrder
@@ -2286,12 +2178,6 @@ export namespace Prisma {
     NOT?: FeedbackSubmissionScalarWhereWithAggregatesInput | FeedbackSubmissionScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"FeedbackSubmission"> | string
     audience?: EnumAudienceWithAggregatesFilter<"FeedbackSubmission"> | $Enums.Audience
-    firstName?: StringWithAggregatesFilter<"FeedbackSubmission"> | string
-    lastName?: StringWithAggregatesFilter<"FeedbackSubmission"> | string
-    email?: StringWithAggregatesFilter<"FeedbackSubmission"> | string
-    emailNormalized?: StringWithAggregatesFilter<"FeedbackSubmission"> | string
-    phone?: StringWithAggregatesFilter<"FeedbackSubmission"> | string
-    phoneNormalized?: StringWithAggregatesFilter<"FeedbackSubmission"> | string
     answers?: JsonWithAggregatesFilter<"FeedbackSubmission">
     locale?: StringWithAggregatesFilter<"FeedbackSubmission"> | string
     sheetSyncStatus?: EnumSheetSyncStatusWithAggregatesFilter<"FeedbackSubmission"> | $Enums.SheetSyncStatus
@@ -2303,12 +2189,6 @@ export namespace Prisma {
   export type FeedbackSubmissionCreateInput = {
     id?: string
     audience: $Enums.Audience
-    firstName: string
-    lastName: string
-    email: string
-    emailNormalized: string
-    phone: string
-    phoneNormalized: string
     answers: JsonNullValueInput | InputJsonValue
     locale: string
     sheetSyncStatus?: $Enums.SheetSyncStatus
@@ -2320,12 +2200,6 @@ export namespace Prisma {
   export type FeedbackSubmissionUncheckedCreateInput = {
     id?: string
     audience: $Enums.Audience
-    firstName: string
-    lastName: string
-    email: string
-    emailNormalized: string
-    phone: string
-    phoneNormalized: string
     answers: JsonNullValueInput | InputJsonValue
     locale: string
     sheetSyncStatus?: $Enums.SheetSyncStatus
@@ -2337,12 +2211,6 @@ export namespace Prisma {
   export type FeedbackSubmissionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     audience?: EnumAudienceFieldUpdateOperationsInput | $Enums.Audience
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailNormalized?: StringFieldUpdateOperationsInput | string
-    phone?: StringFieldUpdateOperationsInput | string
-    phoneNormalized?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     locale?: StringFieldUpdateOperationsInput | string
     sheetSyncStatus?: EnumSheetSyncStatusFieldUpdateOperationsInput | $Enums.SheetSyncStatus
@@ -2354,12 +2222,6 @@ export namespace Prisma {
   export type FeedbackSubmissionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     audience?: EnumAudienceFieldUpdateOperationsInput | $Enums.Audience
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailNormalized?: StringFieldUpdateOperationsInput | string
-    phone?: StringFieldUpdateOperationsInput | string
-    phoneNormalized?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     locale?: StringFieldUpdateOperationsInput | string
     sheetSyncStatus?: EnumSheetSyncStatusFieldUpdateOperationsInput | $Enums.SheetSyncStatus
@@ -2371,12 +2233,6 @@ export namespace Prisma {
   export type FeedbackSubmissionCreateManyInput = {
     id?: string
     audience: $Enums.Audience
-    firstName: string
-    lastName: string
-    email: string
-    emailNormalized: string
-    phone: string
-    phoneNormalized: string
     answers: JsonNullValueInput | InputJsonValue
     locale: string
     sheetSyncStatus?: $Enums.SheetSyncStatus
@@ -2388,12 +2244,6 @@ export namespace Prisma {
   export type FeedbackSubmissionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     audience?: EnumAudienceFieldUpdateOperationsInput | $Enums.Audience
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailNormalized?: StringFieldUpdateOperationsInput | string
-    phone?: StringFieldUpdateOperationsInput | string
-    phoneNormalized?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     locale?: StringFieldUpdateOperationsInput | string
     sheetSyncStatus?: EnumSheetSyncStatusFieldUpdateOperationsInput | $Enums.SheetSyncStatus
@@ -2405,12 +2255,6 @@ export namespace Prisma {
   export type FeedbackSubmissionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     audience?: EnumAudienceFieldUpdateOperationsInput | $Enums.Audience
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailNormalized?: StringFieldUpdateOperationsInput | string
-    phone?: StringFieldUpdateOperationsInput | string
-    phoneNormalized?: StringFieldUpdateOperationsInput | string
     answers?: JsonNullValueInput | InputJsonValue
     locale?: StringFieldUpdateOperationsInput | string
     sheetSyncStatus?: EnumSheetSyncStatusFieldUpdateOperationsInput | $Enums.SheetSyncStatus
@@ -2437,21 +2281,6 @@ export namespace Prisma {
     notIn?: $Enums.Audience[] | ListEnumAudienceFieldRefInput<$PrismaModel>
     not?: NestedEnumAudienceFilter<$PrismaModel> | $Enums.Audience
   }
-
-  export type StringFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringFilter<$PrismaModel> | string
-  }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -2474,6 +2303,21 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type StringFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringFilter<$PrismaModel> | string
   }
 
   export type EnumSheetSyncStatusFilter<$PrismaModel = never> = {
@@ -2528,12 +2372,6 @@ export namespace Prisma {
   export type FeedbackSubmissionCountOrderByAggregateInput = {
     id?: SortOrder
     audience?: SortOrder
-    firstName?: SortOrder
-    lastName?: SortOrder
-    email?: SortOrder
-    emailNormalized?: SortOrder
-    phone?: SortOrder
-    phoneNormalized?: SortOrder
     answers?: SortOrder
     locale?: SortOrder
     sheetSyncStatus?: SortOrder
@@ -2545,12 +2383,6 @@ export namespace Prisma {
   export type FeedbackSubmissionMaxOrderByAggregateInput = {
     id?: SortOrder
     audience?: SortOrder
-    firstName?: SortOrder
-    lastName?: SortOrder
-    email?: SortOrder
-    emailNormalized?: SortOrder
-    phone?: SortOrder
-    phoneNormalized?: SortOrder
     locale?: SortOrder
     sheetSyncStatus?: SortOrder
     sheetSyncedAt?: SortOrder
@@ -2561,12 +2393,6 @@ export namespace Prisma {
   export type FeedbackSubmissionMinOrderByAggregateInput = {
     id?: SortOrder
     audience?: SortOrder
-    firstName?: SortOrder
-    lastName?: SortOrder
-    email?: SortOrder
-    emailNormalized?: SortOrder
-    phone?: SortOrder
-    phoneNormalized?: SortOrder
     locale?: SortOrder
     sheetSyncStatus?: SortOrder
     sheetSyncedAt?: SortOrder
@@ -2598,24 +2424,6 @@ export namespace Prisma {
     _min?: NestedEnumAudienceFilter<$PrismaModel>
     _max?: NestedEnumAudienceFilter<$PrismaModel>
   }
-
-  export type StringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
-  }
   export type JsonWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
@@ -2641,6 +2449,24 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedJsonFilter<$PrismaModel>
     _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
   }
 
   export type EnumSheetSyncStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -2832,23 +2658,6 @@ export namespace Prisma {
     _min?: NestedEnumAudienceFilter<$PrismaModel>
     _max?: NestedEnumAudienceFilter<$PrismaModel>
   }
-
-  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
-  }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -2871,6 +2680,23 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
   }
 
   export type NestedEnumSheetSyncStatusWithAggregatesFilter<$PrismaModel = never> = {

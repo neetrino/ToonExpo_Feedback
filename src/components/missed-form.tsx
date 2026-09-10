@@ -5,20 +5,15 @@ import {
   CalendarDays,
   HelpCircle,
   Lightbulb,
-  Mail,
-  Phone,
   Sparkles,
-  User,
-  UserRound,
 } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Controller, useForm, useWatch, type FieldPath } from 'react-hook-form';
-import { QuestionBlock, TextAreaField, TextField } from '@/components/form-fields';
+import { QuestionBlock, TextAreaField } from '@/components/form-fields';
 import { OptionCheckboxGroup, OptionRadioGroup } from '@/components/form-option-groups';
 import { FormWizard } from '@/components/form-wizard';
-import { IconBubble } from '@/components/icon-bubble';
 import { useRouter } from '@/i18n/navigation';
 import {
   MOTIVATION_KEYS,
@@ -31,9 +26,9 @@ import {
   type WouldIncreaseKey,
 } from '@/lib/feedback-options';
 import { missedPayloadSchema, type MissedFormValues } from '@/lib/feedback-schema';
+import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
 
 const MISSED_STEP_FIELDS: FieldPath<MissedFormValues>[][] = [
-  ['firstName', 'lastName', 'email', 'phone'],
   ['answers.noVisitReason', 'answers.noVisitOther'],
   ['answers.wouldIncrease', 'answers.wouldIncreaseOther', 'answers.propertyRelevance'],
   [
@@ -56,10 +51,6 @@ export function MissedForm() {
     defaultValues: {
       audience: 'MISSED',
       locale: locale === 'ru' ? 'ru' : 'hy',
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
       website: '',
       answers: {
         noVisitOther: '',
@@ -132,7 +123,7 @@ export function MissedForm() {
           void goNext();
           return;
         }
-        void form.handleSubmit(onSubmit)(event);
+        void form.handleSubmit(onSubmit, scrollToFirstInvalidField)(event);
       }}
       noValidate
     >
@@ -147,56 +138,6 @@ export function MissedForm() {
         }}
       >
         {step === 0 ? (
-          <section className="grid gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2 flex items-center gap-3">
-              <IconBubble>
-                <UserRound className="size-5" />
-              </IconBubble>
-              <h2 className="font-display text-xl font-semibold">{t('contact.title')}</h2>
-            </div>
-            <TextField
-              label={t('contact.firstName')}
-              autoComplete="given-name"
-              icon={<User className="size-4" />}
-              registration={form.register('firstName')}
-              error={form.formState.errors.firstName}
-            />
-            <TextField
-              label={t('contact.lastName')}
-              autoComplete="family-name"
-              icon={<UserRound className="size-4" />}
-              registration={form.register('lastName')}
-              error={form.formState.errors.lastName}
-            />
-            <TextField
-              label={t('contact.email')}
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              icon={<Mail className="size-4" />}
-              registration={form.register('email')}
-              error={form.formState.errors.email}
-            />
-            <TextField
-              label={t('contact.phone')}
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              placeholder="+374…"
-              icon={<Phone className="size-4" />}
-              registration={form.register('phone')}
-              error={form.formState.errors.phone}
-            />
-            <input
-              className="hidden"
-              tabIndex={-1}
-              autoComplete="off"
-              {...form.register('website')}
-            />
-          </section>
-        ) : null}
-
-        {step === 1 ? (
           <>
             <Controller
               control={form.control}
@@ -225,10 +166,16 @@ export function MissedForm() {
                 error={form.formState.errors.answers?.noVisitOther}
               />
             ) : null}
+            <input
+              className="hidden"
+              tabIndex={-1}
+              autoComplete="off"
+              {...form.register('website')}
+            />
           </>
         ) : null}
 
-        {step === 2 ? (
+        {step === 1 ? (
           <>
             <QuestionBlock
               legend={t('missed.q2')}
@@ -274,7 +221,7 @@ export function MissedForm() {
           </>
         ) : null}
 
-        {step === 3 ? (
+        {step === 2 ? (
           <>
             <Controller
               control={form.control}
