@@ -10,7 +10,7 @@
 
 ## Локальный запуск
 
-Нужны Node 24 и pnpm 9. В `.env` только **dev** Neon, не production.
+Нужны Node 24 и pnpm 11. В `.env` только **dev** Neon, не production.
 
 ```bash
 pnpm install

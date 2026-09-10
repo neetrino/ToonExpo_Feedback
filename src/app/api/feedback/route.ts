@@ -26,7 +26,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   try {
     const payload = feedbackPayloadSchema.parse(body);
     if (isHoneypotFilled(payload.website)) {
-      return NextResponse.json({ ok: true });
+      return new NextResponse(null, { status: 204 });
     }
 
     const saved = await saveFeedback(payload);

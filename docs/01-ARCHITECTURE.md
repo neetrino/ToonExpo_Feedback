@@ -132,7 +132,7 @@ Feature-папок Size B нет.
 2. Если honeypot заполнен → тихо 204 / фейковый успех, в БД не писать
 3. Zod: audience, обязательные поля, условные поля, лимиты длины
 4. INSERT FeedbackSubmission (sheetSyncStatus = pending)
-5. Ответ клиенту 201/200
+5. Ответ клиенту 201 (honeypot — 204, без тела)
 6. После ответа: попытка append в нужный лист Sheet
 7. Успех → synced + timestamp; ошибка → failed + короткий код ошибки
 8. Cron (например */10 * * * *) повторяет pending/failed, секрет CRON_SECRET

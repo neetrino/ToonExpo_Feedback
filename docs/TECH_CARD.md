@@ -18,7 +18,7 @@
 |---|----------|---------|--------|---------|
 | 1.1 | Размер проекта | A | ✅ | Подтверждено владельцем 2026-09-10 |
 | 1.2 | Архитектура | Простая (`src/app`, `components`, `lib`, `types`) | ✅ | Size A |
-| 1.3 | Package manager | pnpm | 🔄 | Стандарт шаблона |
+| 1.3 | Package manager | pnpm 11 | ✅ | Как в CI; lockfile v9, `allowBuilds` |
 | 1.4 | Node.js | 24.x LTS | 🔄 | Стандарт шаблона |
 | 1.5 | TypeScript | 5.9, `strict: true` | 🔄 | Стандарт шаблона |
 | 1.6 | Monorepo | — | ➖ | Только для C |
