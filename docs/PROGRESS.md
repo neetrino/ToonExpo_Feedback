@@ -59,7 +59,6 @@
 - Вход: две карточки → Visited / Missed.
 - Sheet: Apps Script webhook, не service account.
 - Код приложения написан. Webhook и прод-env остаются за человеком.
-- Независимый review: webhook считает успехом только `{ ok: true }`; скрытые property/B2B поля больше не валят сабмит; CI typecheck сначала делает `next typegen`.
 
 ---
 

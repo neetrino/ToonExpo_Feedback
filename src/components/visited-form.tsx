@@ -103,14 +103,6 @@ export function VisitedForm() {
       ? current.filter((item) => item !== value)
       : [...current, value];
     form.setValue('answers.visitGoals', next, { shouldValidate: true });
-    if (!showsPropertyQuestion(next)) {
-      form.setValue('answers.propertyOutcome', undefined);
-      form.setValue('answers.propertyDetail', '');
-    }
-    if (!showsB2bQuestion(next)) {
-      form.setValue('answers.b2bOutcome', undefined);
-      form.setValue('answers.b2bDetail', '');
-    }
   }
 
   function toggleWant(value: WantKey) {
