@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  Building2,
-  CalendarDays,
-  HelpCircle,
-  Lightbulb,
-  Sparkles,
-} from 'lucide-react';
+import { Building2, CalendarDays, HelpCircle, Lightbulb, Sparkles } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';

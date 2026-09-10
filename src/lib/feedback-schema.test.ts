@@ -129,7 +129,6 @@ describe('visitedPayloadSchema', () => {
     expect(parsed.answers.b2bOutcome).toBeUndefined();
     expect(parsed.answers.b2bDetail).toBe('');
   });
-
 });
 
 describe('missedPayloadSchema', () => {
