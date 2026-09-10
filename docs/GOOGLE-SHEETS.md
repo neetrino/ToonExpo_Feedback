@@ -4,7 +4,7 @@
 
 Spreadsheet ID: `1nGBUK_Do0MZZ-RzN4MSeJpFuJ-RpQUzrgnDTdBkVJBY`
 
-Структура создана 2026-09-10: листы `Visited` и `Missed`, шапка в первой строке. Webhook для записи ответов подключим вместе с кодом сайта.
+Структура создана 2026-09-10: листы `Visited` и `Missed`, шапка в первой строке. Контактов в таблице нет. Если в шапке ещё стоят `first_name` / `last_name` / `email` / `phone` — удалите эти колонки. Скрипт вебхука лежит в репозитории; URL и секрет в env появятся после деплоя Web App.
 
 ---
 
@@ -48,12 +48,14 @@ URL скрипта = пароль. Его кладём только в `.env` / 
 
 ---
 
-## Скрипт (вставим при подключении)
+## Скрипт
 
-Логика: проверить секрет → понять лист `Visited` или `Missed` → `appendRow`.  
-Полный текст добавим в репозиторий вместе с кодом сайта, не раньше.
+Готовый файл: [`docs/apps-script/Code.gs`](./apps-script/Code.gs).
 
-Env:
+Логика: проверить `secret` в JSON → лист `Visited` или `Missed` → `appendRow`.  
+Секрет кладём в тело запроса: Apps Script часто не отдаёт кастомные заголовки.
+
+Env (Vercel / CI, не git):
 
 ```text
 SHEETS_WEBHOOK_URL="https://script.google.com/macros/s/.../exec"
@@ -77,10 +79,6 @@ SHEETS_WEBHOOK_SECRET=""
 |---------|--------|
 | `submitted_at` | Время (ISO) |
 | `id` | UUID из Neon |
-| `first_name` | Имя |
-| `last_name` | Фамилия |
-| `email` | Email |
-| `phone` | Телефон |
 | `locale` | `hy` или `ru` |
 | `problems` | Q1, несколько, через ` \| ` |
 | `problems_org_detail` | Текст, если выбрали орг. проблему |
@@ -106,10 +104,6 @@ SHEETS_WEBHOOK_SECRET=""
 |---------|--------|
 | `submitted_at` | Время (ISO) |
 | `id` | UUID из Neon |
-| `first_name` | Имя |
-| `last_name` | Фамилия |
-| `email` | Email |
-| `phone` | Телефон |
 | `locale` | `hy` или `ru` |
 | `no_visit_reason` | Q1 |
 | `no_visit_other` | Текст «Другое» |
@@ -129,7 +123,7 @@ SHEETS_WEBHOOK_SECRET=""
 
 1. INSERT в БД (`pending`).
 2. Человек уже видит «спасибо».
-3. Сервер дергает webhook; ошибка → `failed`.
+3. Сервер дергает webhook. Apps Script почти всегда отвечает HTTP 200; успех только если тело `{ "ok": true }`. `{ "error": "..." }` → `failed`.
 4. Cron позже повторяет.
 
 Для ~2000 писем этого достаточно. Service account не подключаем, пока этот путь не сломается.

@@ -1,0 +1,37 @@
+// ToonExpo Feedback — Prisma 7 + PostgreSQL / Neon
+// Runtime pooled URL: DATABASE_URL (adapter in src/lib/db.ts)
+// CLI / migrations: DIRECT_URL or DATABASE_URL in prisma.config.ts
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Audience {
+  VISITED
+  MISSED
+}
+
+enum SheetSyncStatus {
+  pending
+  synced
+  failed
+}
+
+model FeedbackSubmission {
+  id              String          @id @default(uuid()) @db.Uuid
+  audience        Audience
+  answers         Json
+  locale          String
+  sheetSyncStatus SheetSyncStatus @default(pending)
+  sheetSyncedAt   DateTime?
+  sheetError      String?
+  createdAt       DateTime        @default(now())
+
+  @@index([sheetSyncStatus, createdAt])
+  @@index([createdAt])
+}

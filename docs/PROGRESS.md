@@ -1,8 +1,8 @@
 # Прогресс — ToonExpo Feedback
 
 **Проект.** ToonExpo Feedback
-**Фаза.** Документация / онбординг
-**Общий прогресс.** 15%
+**Фаза.** Реализация MVP
+**Общий прогресс.** 85%
 
 **Обновлено.** 2026-09-10
 
@@ -12,78 +12,39 @@
 
 | Фаза | Статус | Прогресс |
 |------|--------|----------|
-| 1. Документы и TECH_CARD | 🔄 В работе | 80% |
-| 2. Scaffold + качество | ⏳ Ждёт утверждения | 0% |
-| 3. MVP формы + Neon | ⏳ Ждёт | 0% |
-| 4. Google Sheets sync | ⏳ Ждёт | 0% |
-| 5. Дизайн / домен / релиз | ⏳ Ждёт | 0% |
-
-Код приложения не начат специально.
+| 1. Документы и TECH_CARD | ✅ Готово | 100% |
+| 2. Scaffold + качество | ✅ Готово | 100% |
+| 3. MVP формы + Neon | 🔄 В работе | 90% |
+| 4. Google Sheets sync | 🔄 Код готов, webhook не задеплоен | 70% |
+| 5. Дизайн / домен / релиз | 🔄 UI готов, ждёт деплоя | 70% |
 
 ---
 
 ## Сделано
 
-### Фаза 1. Онбординг
-
-- [x] Разобрана анкета (две аудитории, условные поля)
-- [x] Зафиксирован размер A
-- [x] Заполнен `docs/BRIEF.md`
-- [x] Черновик `docs/TECH_CARD.md`
-- [x] `docs/01-ARCHITECTURE.md`
-- [x] `docs/GOOGLE-SHEETS.md`
-- [x] `docs/DECISIONS.md`
-- [x] Проектный `README.md`
-- [x] `.env.example` под этот продукт
-- [ ] Подтверждение TECH_CARD владельцем
-- [x] Клиент: языки `hy` + `ru`, без English
-- [x] Клиент: собираем имя, фамилию, телефон, email
-- [ ] Ок на вход «был / не был»
-- [ ] Ок на лимиты БД 4.4–4.7
-- [ ] Service account Editor на таблицу
+- [x] Размер A, стек Next.js 16 + Prisma 7 + next-intl (`hy` / `ru`)
+- [x] Схема `FeedbackSubmission` и код записи в Neon
+- [x] Лендинг, формы Visited / Missed, страница «спасибо»
+- [x] `POST /api/feedback`, honeypot, origin check
+- [x] Маппинг в Sheet + cron `/api/cron/sheets-sync`
+- [x] Apps Script: `docs/apps-script/Code.gs`
+- [x] Vitest: Zod-ветки и колонки Sheet
+- [x] CI quality + migrate-on-deploy workflow
+- [x] Применить миграцию на **dev** Neon
+- [x] Профессиональный UI: бренд-ассеты Registration, шаги анкет, thank-you с зелёной иконкой, mobile-first
+- [ ] Задеплоить Apps Script и прописать webhook в env
+- [ ] Прод: Vercel, домен, `DIRECT_URL` в GitHub Secrets
 
 ---
 
 ## В работе
 
-Подтверждение решений. Реализация не стартует.
+Локальная проверка форм и миграция на dev Neon. Прод-деплой и Sheet webhook — после секретов.
 
-**Блокеры.** См. ниже.
+**Блокеры.**
 
----
-
-## Следующие задачи (после «можно писать код»)
-
-### Приоритет 1
-
-1. Scaffold Next.js 16 + pnpm + Tailwind + Prisma (Size A)
-2. CI quality + migrate-on-deploy (GitHub Actions → Vercel)
-3. Схема `FeedbackSubmission` и локальная миграция на **dev** Neon
-4. Формы Visited / Missed + Zod
-5. POST: запись в Neon, ответ пользователю, затем Sheet
-6. Cron догона Sheet
-7. UI: логотип, плоский бренд без градиента
-8. Домен `feedback.toonexpo.com`
-
-### Позже
-
-- Playwright smoke
-- Vercel Analytics — по желанию
-
----
-
-## Блокеры
-
-### Критичные для кода
-
-- [x] Структура Sheet: листы Visited / Missed и заголовки
-- [ ] **Sheet webhook.** Apps Script webhook заведём вместе с кодом
-
-### Не критично
-
-- [ ] Точный текст страницы «спасибо»
-- [ ] noindex vs обычное SEO
-- [ ] Создать листы `Visited` / `Missed` заранее или в коде
+- [ ] Apps Script Web App ещё не задеплоен (URL + secret не в env)
+- [ ] Production `DIRECT_URL` только в CI, не на ноутбуке
 
 ---
 
@@ -93,11 +54,11 @@
 
 - Админки не будет; серверный слой всё равно нужен.
 - Sheet не в критическом пути.
-- Дизайн опирается на Registration, но без градиента и проще.
-- Языки: hy + ru. Контакты: firstName, lastName, phone, email.
+- Дизайн: официальные логотипы и favicon из Registration. Светлая страница, тёмный хедер, шаги, без градиента.
+- Языки: hy + ru. Контакты не собираем.
 - Вход: две карточки → Visited / Missed.
 - Sheet: Apps Script webhook, не service account.
-- 2026-09-10: в Google Sheet созданы листы Visited / Missed и заголовки.
+- Код приложения написан. Webhook и прод-env остаются за человеком.
 
 ---
 
@@ -107,5 +68,6 @@
 - Референс UI: https://github.com/neetrino/ToonExpo_Registration
 - Sheet: https://docs.google.com/spreadsheets/d/1nGBUK_Do0MZZ-RzN4MSeJpFuJ-RpQUzrgnDTdBkVJBY/edit?usp=sharing
 - Прод-домен: https://feedback.toonexpo.com
+- Webhook: [`apps-script/Code.gs`](./apps-script/Code.gs)
 
-**Следующее обновление.** После ответов клиента и подтверждения TECH_CARD.
+**Следующее обновление.** После локальной миграции и проверки форм.
