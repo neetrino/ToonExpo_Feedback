@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { feedbackPayloadSchema } from '@/lib/feedback-schema';
-import { toSheetRow } from '@/lib/sheets';
+import { assertSheetsWebhookOk, toSheetRow } from '@/lib/sheets';
 
 const submittedAt = new Date('2026-09-10T12:00:00.000Z');
 
@@ -99,5 +99,21 @@ describe('toSheetRow', () => {
       'expo_prices',
       '',
     ]);
+  });
+});
+
+describe('assertSheetsWebhookOk', () => {
+  it('accepts HTTP 200 with ok true', () => {
+    expect(() => assertSheetsWebhookOk({ ok: true }, 200)).not.toThrow();
+  });
+
+  it('rejects HTTP 200 with an Apps Script error body', () => {
+    expect(() => assertSheetsWebhookOk({ error: 'unauthorized' }, 200)).toThrow(
+      'SHEETS_WEBHOOK_unauthorized',
+    );
+  });
+
+  it('rejects a non-2xx status even if the body says ok', () => {
+    expect(() => assertSheetsWebhookOk({ ok: true }, 500)).toThrow('SHEETS_WEBHOOK_500');
   });
 });

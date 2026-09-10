@@ -15,7 +15,7 @@
     "lint:fix": "eslint . --fix --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"messages/**/*.json\" \"*.{ts,js,mjs,cjs,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"messages/**/*.json\" \"*.{ts,js,mjs,cjs,json}\"",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "prisma:generate": "prisma generate",

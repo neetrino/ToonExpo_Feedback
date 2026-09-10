@@ -87,8 +87,32 @@ export async function appendSheetRow(row: SheetRow): Promise<void> {
     signal: AbortSignal.timeout(8_000),
   });
 
-  if (!response.ok) {
-    logger.warn({ status: response.status }, 'sheets.webhook_failed');
-    throw new Error(`SHEETS_WEBHOOK_${response.status}`);
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    logger.warn({ status: response.status }, 'sheets.webhook_invalid_json');
+    throw new Error('SHEETS_WEBHOOK_INVALID_JSON');
   }
+
+  assertSheetsWebhookOk(body, response.status);
+}
+
+/** Apps Script always returns HTTP 200; success is `{ ok: true }` in the body. */
+export function assertSheetsWebhookOk(body: unknown, status: number): void {
+  if (status < 200 || status >= 300) {
+    logger.warn({ status }, 'sheets.webhook_failed');
+    throw new Error(`SHEETS_WEBHOOK_${status}`);
+  }
+
+  if (body && typeof body === 'object' && 'ok' in body && body.ok === true) {
+    return;
+  }
+
+  const code =
+    body && typeof body === 'object' && 'error' in body && typeof body.error === 'string'
+      ? body.error
+      : 'invalid_response';
+  logger.warn({ status, code }, 'sheets.webhook_failed');
+  throw new Error(`SHEETS_WEBHOOK_${code}`);
 }

@@ -78,21 +78,24 @@ export const visitedAnswersSchema = z
         message: 'required',
       });
     }
-    if (showsPropertyQuestion(value.visitGoals) && !value.propertyOutcome) {
+    const propertyVisible = showsPropertyQuestion(value.visitGoals);
+    const b2bVisible = showsB2bQuestion(value.visitGoals);
+
+    if (propertyVisible && !value.propertyOutcome) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['propertyOutcome'],
         message: 'required',
       });
     }
-    if (value.propertyOutcome && clipText(value.propertyDetail).length === 0) {
+    if (propertyVisible && value.propertyOutcome && clipText(value.propertyDetail).length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['propertyDetail'],
         message: 'required',
       });
     }
-    if (showsB2bQuestion(value.visitGoals) && !value.b2bOutcome) {
+    if (b2bVisible && !value.b2bOutcome) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['b2bOutcome'],
@@ -100,6 +103,7 @@ export const visitedAnswersSchema = z
       });
     }
     if (
+      b2bVisible &&
       (value.b2bOutcome === 'completed' ||
         value.b2bOutcome === 'in_progress' ||
         value.b2bOutcome === 'no') &&
@@ -127,6 +131,18 @@ export const visitedAnswersSchema = z
         message: 'required',
       });
     }
+  })
+  .transform((value) => {
+    const next = { ...value };
+    if (!showsPropertyQuestion(next.visitGoals)) {
+      next.propertyOutcome = undefined;
+      next.propertyDetail = '';
+    }
+    if (!showsB2bQuestion(next.visitGoals)) {
+      next.b2bOutcome = undefined;
+      next.b2bDetail = '';
+    }
+    return next;
   });
 
 export const missedAnswersSchema = z

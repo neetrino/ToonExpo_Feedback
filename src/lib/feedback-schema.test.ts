@@ -120,6 +120,24 @@ describe('visitedPayloadSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('ignores leftover property and b2b answers after those goals are unchecked', () => {
+    const parsed = visitedPayloadSchema.parse({
+      ...visitedBase,
+      answers: {
+        ...visitedBase.answers,
+        visitGoals: ['market_research'],
+        propertyOutcome: 'purchased',
+        propertyDetail: '',
+        b2bOutcome: 'completed',
+        b2bDetail: '',
+      },
+    });
+    expect(parsed.answers.propertyOutcome).toBeUndefined();
+    expect(parsed.answers.propertyDetail).toBe('');
+    expect(parsed.answers.b2bOutcome).toBeUndefined();
+    expect(parsed.answers.b2bDetail).toBe('');
+  });
+
   it('rejects an invalid Armenian phone number', () => {
     const result = visitedPayloadSchema.safeParse({
       ...visitedBase,
