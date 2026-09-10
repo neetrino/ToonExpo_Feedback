@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import type { UseFormRegisterReturn } from 'react-hook-form';
 import { cn } from '@/lib/utils';
@@ -12,8 +13,15 @@ export function FieldErrorText({ error }: { error?: FieldIssue }) {
     return null;
   }
   const key = error.message === 'invalid_phone' ? 'invalidPhone' : 'required';
-  return <p className="mt-1 text-sm text-destructive">{t(key)}</p>;
+  return (
+    <p className="mt-1.5 text-sm text-destructive" role="alert">
+      {t(key)}
+    </p>
+  );
 }
+
+const controlClassName =
+  'w-full min-h-12 rounded-2xl border bg-card px-4 py-3 text-base outline-none ring-offset-background transition-[border-color,box-shadow] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
 
 export function TextField({
   label,
@@ -21,23 +29,26 @@ export function TextField({
   error,
   type = 'text',
   autoComplete,
+  inputMode,
+  placeholder,
 }: {
   label: string;
   registration: UseFormRegisterReturn;
   error?: FieldIssue;
   type?: 'text' | 'email' | 'tel';
   autoComplete?: string;
+  inputMode?: 'text' | 'email' | 'tel';
+  placeholder?: string;
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-medium">{label}</span>
+      <span className="mb-2 block text-sm font-medium">{label}</span>
       <input
         type={type}
         autoComplete={autoComplete}
-        className={cn(
-          'w-full rounded-xl border bg-card px-3 py-2.5 text-base outline-none focus:border-accent',
-          error ? 'border-destructive' : 'border-border',
-        )}
+        inputMode={inputMode}
+        placeholder={placeholder}
+        className={cn(controlClassName, error ? 'border-destructive' : 'border-input')}
         {...registration}
       />
       <FieldErrorText error={error} />
@@ -56,94 +67,16 @@ export function TextAreaField({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-medium">{label}</span>
+      <span className="mb-2 block text-sm font-medium leading-snug">{label}</span>
       <textarea
-        rows={3}
+        rows={4}
         className={cn(
-          'w-full rounded-xl border bg-card px-3 py-2.5 text-base outline-none focus:border-accent',
-          error ? 'border-destructive' : 'border-border',
+          controlClassName,
+          'min-h-28 resize-y',
+          error ? 'border-destructive' : 'border-input',
         )}
         {...registration}
       />
-      <FieldErrorText error={error} />
-    </label>
-  );
-}
-
-export function CheckboxGroup<T extends string>({
-  label,
-  options,
-  values,
-  onToggle,
-  error,
-  optionLabel,
-}: {
-  label: string;
-  options: readonly T[];
-  values: readonly T[];
-  onToggle: (value: T) => void;
-  error?: FieldIssue;
-  optionLabel: (value: T) => string;
-}) {
-  return (
-    <fieldset>
-      <legend className="mb-3 text-base font-semibold">{label}</legend>
-      <div className="grid gap-2">
-        {options.map((option) => (
-          <label
-            key={option}
-            className="flex items-start gap-3 rounded-xl border border-border bg-card px-3 py-2.5"
-          >
-            <input
-              type="checkbox"
-              className="mt-1"
-              checked={values.includes(option)}
-              onChange={() => onToggle(option)}
-            />
-            <span>{optionLabel(option)}</span>
-          </label>
-        ))}
-      </div>
-      <FieldErrorText error={error} />
-    </fieldset>
-  );
-}
-
-export function SelectField<T extends string>({
-  label,
-  options,
-  value,
-  onChange,
-  error,
-  optionLabel,
-  placeholder,
-}: {
-  label: string;
-  options: readonly T[];
-  value: T | '';
-  onChange: (value: T) => void;
-  error?: FieldIssue;
-  optionLabel: (value: T) => string;
-  placeholder: string;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-sm font-medium">{label}</span>
-      <select
-        className={cn(
-          'w-full rounded-xl border bg-card px-3 py-2.5 text-base outline-none focus:border-accent',
-          error ? 'border-destructive' : 'border-border',
-        )}
-        value={value}
-        onChange={(event) => onChange(event.target.value as T)}
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {optionLabel(option)}
-          </option>
-        ))}
-      </select>
       <FieldErrorText error={error} />
     </label>
   );
@@ -166,28 +99,46 @@ export function ScoreField({
 }) {
   return (
     <fieldset>
-      <legend className="mb-2 text-base font-semibold">{label}</legend>
-      <div className="flex flex-wrap gap-2">
+      <legend className="mb-3 text-[15px] font-semibold leading-snug">{label}</legend>
+      <div className="grid grid-cols-5 gap-2">
         {Array.from({ length: 10 }, (_, index) => index + 1).map((score) => (
           <button
             key={score}
             type="button"
             onClick={() => onChange(score)}
             className={cn(
-              'h-10 w-10 rounded-lg border text-sm font-semibold',
+              'flex min-h-12 items-center justify-center rounded-xl border text-sm font-semibold transition-colors duration-200 motion-reduce:transition-none',
               value === score
                 ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-border bg-card text-foreground',
+                : 'border-input bg-card text-foreground hover:border-accent',
             )}
           >
             {score}
           </button>
         ))}
       </div>
-      <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+      <div className="mt-2 flex justify-between gap-3 text-xs text-muted-foreground">
         <span>{low}</span>
-        <span>{high}</span>
+        <span className="text-right">{high}</span>
       </div>
+      <FieldErrorText error={error} />
+    </fieldset>
+  );
+}
+
+export function QuestionBlock({
+  legend,
+  error,
+  children,
+}: {
+  legend: string;
+  error?: FieldIssue;
+  children: ReactNode;
+}) {
+  return (
+    <fieldset>
+      <legend className="mb-3 text-[15px] font-semibold leading-snug">{legend}</legend>
+      {children}
       <FieldErrorText error={error} />
     </fieldset>
   );

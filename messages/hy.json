@@ -7,7 +7,12 @@
     "select": "Ընտրել",
     "submit": "Ուղարկել",
     "sending": "Ուղարկվում է…",
-    "back": "Վերադառնալ սկիզբ"
+    "back": "Վերադառնալ սկիզբ",
+    "prev": "Հետ",
+    "next": "Հաջորդ",
+    "step": "Քայլ {current}/{total}",
+    "siteName": "TOON EXPO",
+    "languageSwitcher": "Լեզու"
   },
   "errors": {
     "required": "Այս դաշտը պարտադիր է",
@@ -31,7 +36,8 @@
     "visitedTitle": "Ես եղել եմ ցուցահանդեսին",
     "visitedText": "Գրանցված եմ և այցելել եմ TOON EXPO · INVEST 2026։",
     "missedTitle": "Ես չեմ այցելել",
-    "missedText": "Գրանցված եմ, բայց չեմ այցելել ցուցահանդեսին։"
+    "missedText": "Գրանցված եմ, բայց չեմ այցելել ցուցահանդեսին։",
+    "continue": "Շարունակել"
   },
   "visited": {
     "title": "Հարցաշար այցելուների համար",

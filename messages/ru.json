@@ -7,7 +7,12 @@
     "select": "Выберите",
     "submit": "Отправить",
     "sending": "Отправляем…",
-    "back": "На главную"
+    "back": "На главную",
+    "prev": "Назад",
+    "next": "Далее",
+    "step": "Шаг {current} из {total}",
+    "siteName": "TOON EXPO",
+    "languageSwitcher": "Язык"
   },
   "errors": {
     "required": "Это поле обязательно",
@@ -31,7 +36,8 @@
     "visitedTitle": "Я был на выставке",
     "visitedText": "Я зарегистрировался и посетил TOON EXPO · INVEST 2026.",
     "missedTitle": "Я не пришёл",
-    "missedText": "Я зарегистрировался, но не посетил выставку."
+    "missedText": "Я зарегистрировался, но не посетил выставку.",
+    "continue": "Продолжить"
   },
   "visited": {
     "title": "Анкета для посетителей",

@@ -1,5 +1,8 @@
+import { PageHero } from '@/components/page-hero';
 import { PageShell } from '@/components/page-shell';
+import { buttonVariants } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
+import { cn } from '@/lib/utils';
 import { getTranslations } from 'next-intl/server';
 
 export default async function NotFoundPage() {
@@ -7,10 +10,13 @@ export default async function NotFoundPage() {
 
   return (
     <PageShell>
-      <h1 className="font-display text-3xl font-bold tracking-tight">{t('notFound.title')}</h1>
-      <p className="mt-4 text-muted-foreground">{t('notFound.text')}</p>
+      <PageHero
+        kicker={t('common.siteName')}
+        title={t('notFound.title')}
+        intro={t('notFound.text')}
+      />
       <p className="mt-8">
-        <Link href="/" className="text-sm font-semibold text-secondary hover:text-accent">
+        <Link href="/" className={cn(buttonVariants({ variant: 'gold', size: 'lg' }))}>
           {t('thanks.home')}
         </Link>
       </p>

@@ -1,4 +1,5 @@
 import { MissedForm } from '@/components/missed-form';
+import { PageHero } from '@/components/page-hero';
 import { PageShell } from '@/components/page-shell';
 import { Link } from '@/i18n/navigation';
 import { parseLocale } from '@/i18n/routing';
@@ -15,17 +16,16 @@ export default async function MissedPage({ params }: MissedPageProps) {
 
   return (
     <PageShell>
-      <p className="text-sm font-medium uppercase tracking-wide text-secondary">
-        {t('landing.kicker')}
-      </p>
-      <h1 className="mt-3 font-display text-3xl font-bold tracking-tight">{t('missed.title')}</h1>
-      <p className="mt-4 text-muted-foreground">{t('missed.intro')}</p>
+      <PageHero kicker={t('landing.kicker')} title={t('missed.title')} intro={t('missed.intro')} />
       <p className="mt-6">
-        <Link href="/" className="text-sm font-medium text-secondary hover:text-accent">
+        <Link
+          href="/"
+          className="text-sm font-medium text-secondary underline-offset-4 hover:text-accent hover:underline"
+        >
           {t('common.back')}
         </Link>
       </p>
-      <div className="mt-8">
+      <div className="mt-6">
         <MissedForm />
       </div>
     </PageShell>

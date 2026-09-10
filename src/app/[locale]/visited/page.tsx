@@ -1,3 +1,4 @@
+import { PageHero } from '@/components/page-hero';
 import { PageShell } from '@/components/page-shell';
 import { VisitedForm } from '@/components/visited-form';
 import { Link } from '@/i18n/navigation';
@@ -15,17 +16,20 @@ export default async function VisitedPage({ params }: VisitedPageProps) {
 
   return (
     <PageShell>
-      <p className="text-sm font-medium uppercase tracking-wide text-secondary">
-        {t('landing.kicker')}
-      </p>
-      <h1 className="mt-3 font-display text-3xl font-bold tracking-tight">{t('visited.title')}</h1>
-      <p className="mt-4 text-muted-foreground">{t('visited.intro')}</p>
+      <PageHero
+        kicker={t('landing.kicker')}
+        title={t('visited.title')}
+        intro={t('visited.intro')}
+      />
       <p className="mt-6">
-        <Link href="/" className="text-sm font-medium text-secondary hover:text-accent">
+        <Link
+          href="/"
+          className="text-sm font-medium text-secondary underline-offset-4 hover:text-accent hover:underline"
+        >
           {t('common.back')}
         </Link>
       </p>
-      <div className="mt-8">
+      <div className="mt-6">
         <VisitedForm />
       </div>
     </PageShell>

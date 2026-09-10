@@ -16,7 +16,7 @@
 | 2. Scaffold + качество | ✅ Готово | 100% |
 | 3. MVP формы + Neon | 🔄 В работе | 90% |
 | 4. Google Sheets sync | 🔄 Код готов, webhook не задеплоен | 70% |
-| 5. Дизайн / домен / релиз | ⏳ Ждёт секретов и деплоя | 40% |
+| 5. Дизайн / домен / релиз | 🔄 UI готов, ждёт деплоя | 70% |
 
 ---
 
@@ -31,6 +31,7 @@
 - [x] Vitest: Zod-ветки и колонки Sheet
 - [x] CI quality + migrate-on-deploy workflow
 - [x] Применить миграцию на **dev** Neon
+- [x] Профессиональный UI: бренд-ассеты Registration, шаги анкет, thank-you с зелёной иконкой, mobile-first
 - [ ] Задеплоить Apps Script и прописать webhook в env
 - [ ] Прод: Vercel, домен, `DIRECT_URL` в GitHub Secrets
 
@@ -53,7 +54,7 @@
 
 - Админки не будет; серверный слой всё равно нужен.
 - Sheet не в критическом пути.
-- Дизайн опирается на Registration, но без градиента и проще.
+- Дизайн: официальные логотипы и favicon из Registration. Светлая страница, тёмный хедер, шаги, без градиента.
 - Языки: hy + ru. Контакты: firstName, lastName, phone, email.
 - Вход: две карточки → Visited / Missed.
 - Sheet: Apps Script webhook, не service account.
