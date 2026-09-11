@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { feedbackPayloadSchema } from '@/lib/feedback-schema';
+import { MISSED_SHEET_HEADERS, SHEET_TAB_NAMES, VISITED_SHEET_HEADERS } from '@/lib/sheet-labels';
 import { assertSheetsWebhookOk, toSheetRow } from '@/lib/sheets';
 
 const submittedAt = new Date('2026-09-10T12:00:00.000Z');
 
 describe('toSheetRow', () => {
-  it('maps visited answers to the Sheet column order and joins multi values', () => {
+  it('maps visited answers to Armenian labels and headers', () => {
     const payload = feedbackPayloadSchema.parse({
       audience: 'VISITED',
       locale: 'hy',
@@ -27,29 +28,31 @@ describe('toSheetRow', () => {
 
     const row = toSheetRow('11111111-1111-1111-1111-111111111111', submittedAt, payload);
     expect(row.audience).toBe('VISITED');
+    expect(row.tab).toBe(SHEET_TAB_NAMES.VISITED);
+    expect(row.headers).toEqual(VISITED_SHEET_HEADERS);
     expect(row.values).toEqual([
       '2026-09-10T12:00:00.000Z',
       '11111111-1111-1111-1111-111111111111',
-      'hy',
-      'parking | navigation',
+      'Հայերեն',
+      'Կայանման (parking) խնդիր | Տեղորոշման / նավիգացիայի դժվարություններ',
       '',
-      'apartment | other',
+      'Բնակարան / նորակառույց | Այլ',
       'Show apartments',
-      'considered',
+      'Դիտարկել եմ առաջարկներ, բայց չեմ ձեռք բերել',
       'Price',
       '',
       '',
       '7',
       '',
       '8',
-      'yes',
+      'Այո, հաստատ պլանավորում եմ',
       '',
-      'special_offers | consultation',
+      'Ավելի շատ հատուկ առաջարկներ և զեղչեր | Ավելի մանրամասն խորհրդատվություն',
       '',
     ]);
   });
 
-  it('maps missed answers to the Sheet column order', () => {
+  it('maps missed answers to Armenian labels and headers', () => {
     const payload = feedbackPayloadSchema.parse({
       audience: 'MISSED',
       locale: 'ru',
@@ -69,18 +72,20 @@ describe('toSheetRow', () => {
 
     const row = toSheetRow('22222222-2222-2222-2222-222222222222', submittedAt, payload);
     expect(row.audience).toBe('MISSED');
+    expect(row.tab).toBe(SHEET_TAB_NAMES.MISSED);
+    expect(row.headers).toEqual(MISSED_SHEET_HEADERS);
     expect(row.values).toEqual([
       '2026-09-10T12:00:00.000Z',
       '22222222-2222-2222-2222-222222222222',
-      'ru',
-      'other',
+      'Ռուսերեն',
+      'Այլ',
       'Family',
-      'discounts | reminders',
+      'Հատուկ զեղչերի / ակցիաների մասին տեղեկատվություն | SMS / Email / այլ հիշեցում ցուցահանդեսից առաջ',
       '',
-      'next_3_months',
-      'no',
+      'Պլանավորում եմ առաջիկա 3 ամսում',
+      'Ոչ, չեմ պլանավորում',
       'Dates',
-      'expo_prices',
+      'Հատուկ ցուցահանդեսային գներ / զեղչեր',
       '',
     ]);
   });

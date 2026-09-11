@@ -1,10 +1,29 @@
 import type { FeedbackPayload, MissedAnswers, VisitedAnswers } from '@/lib/feedback-schema';
 import { getSheetsWebhookSecret, getSheetsWebhookUrl } from '@/lib/env';
 import { logger } from '@/lib/logger';
-import { clipText, joinSheetList } from '@/lib/normalize';
+import { clipText } from '@/lib/normalize';
+import {
+  MISSED_SHEET_HEADERS,
+  SHEET_TAB_NAMES,
+  VISITED_SHEET_HEADERS,
+  sheetB2bOutcomeLabel,
+  sheetGoalLabels,
+  sheetLocaleLabel,
+  sheetMissedVol2PlanLabel,
+  sheetMotivationLabels,
+  sheetNoVisitReasonLabel,
+  sheetProblemLabels,
+  sheetPropertyOutcomeLabel,
+  sheetPropertyRelevanceLabel,
+  sheetVisitedVol2PlanLabel,
+  sheetWantLabels,
+  sheetWouldIncreaseLabels,
+} from '@/lib/sheet-labels';
 
 export type SheetRow = {
   audience: 'VISITED' | 'MISSED';
+  tab: string;
+  headers: readonly string[];
   values: string[];
 };
 
@@ -13,21 +32,21 @@ function visitedRow(id: string, submittedAt: string, payload: FeedbackPayload): 
   return [
     submittedAt,
     id,
-    payload.locale,
-    joinSheetList(answers.problems),
+    sheetLocaleLabel(payload.locale),
+    sheetProblemLabels(answers.problems),
     clipText(answers.problemsOrgDetail),
-    joinSheetList(answers.visitGoals),
+    sheetGoalLabels(answers.visitGoals),
     clipText(answers.visitGoalsOther),
-    answers.propertyOutcome ?? '',
+    answers.propertyOutcome ? sheetPropertyOutcomeLabel(answers.propertyOutcome) : '',
     clipText(answers.propertyDetail),
-    answers.b2bOutcome ?? '',
+    answers.b2bOutcome ? sheetB2bOutcomeLabel(answers.b2bOutcome) : '',
     clipText(answers.b2bDetail),
     String(answers.expectationsScore),
     clipText(answers.expectationsImprove),
     String(answers.recommendScore),
-    answers.vol2Plan,
+    sheetVisitedVol2PlanLabel(answers.vol2Plan),
     clipText(answers.vol2Factor),
-    joinSheetList(answers.vol2Wants),
+    sheetWantLabels(answers.vol2Wants),
     clipText(answers.vol2WantsOther),
   ];
 }
@@ -37,15 +56,15 @@ function missedRow(id: string, submittedAt: string, payload: FeedbackPayload): s
   return [
     submittedAt,
     id,
-    payload.locale,
-    answers.noVisitReason,
+    sheetLocaleLabel(payload.locale),
+    sheetNoVisitReasonLabel(answers.noVisitReason),
     clipText(answers.noVisitOther),
-    joinSheetList(answers.wouldIncrease),
+    sheetWouldIncreaseLabels(answers.wouldIncrease),
     clipText(answers.wouldIncreaseOther),
-    answers.propertyRelevance,
-    answers.vol2Plan,
+    sheetPropertyRelevanceLabel(answers.propertyRelevance),
+    sheetMissedVol2PlanLabel(answers.vol2Plan),
     clipText(answers.vol2Factor),
-    joinSheetList(answers.vol2Motivation),
+    sheetMotivationLabels(answers.vol2Motivation),
     clipText(answers.vol2MotivationOther),
   ];
 }
@@ -53,9 +72,19 @@ function missedRow(id: string, submittedAt: string, payload: FeedbackPayload): s
 export function toSheetRow(id: string, submittedAt: Date, payload: FeedbackPayload): SheetRow {
   const iso = submittedAt.toISOString();
   if (payload.audience === 'VISITED') {
-    return { audience: 'VISITED', values: visitedRow(id, iso, payload) };
+    return {
+      audience: 'VISITED',
+      tab: SHEET_TAB_NAMES.VISITED,
+      headers: VISITED_SHEET_HEADERS,
+      values: visitedRow(id, iso, payload),
+    };
   }
-  return { audience: 'MISSED', values: missedRow(id, iso, payload) };
+  return {
+    audience: 'MISSED',
+    tab: SHEET_TAB_NAMES.MISSED,
+    headers: MISSED_SHEET_HEADERS,
+    values: missedRow(id, iso, payload),
+  };
 }
 
 export async function appendSheetRow(row: SheetRow): Promise<void> {
@@ -74,6 +103,8 @@ export async function appendSheetRow(row: SheetRow): Promise<void> {
     body: JSON.stringify({
       secret,
       audience: row.audience,
+      tab: row.tab,
+      headers: row.headers,
       values: row.values,
     }),
     signal: AbortSignal.timeout(8_000),

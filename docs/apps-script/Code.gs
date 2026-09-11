@@ -9,12 +9,12 @@
  * 4. Put the /exec URL in SHEETS_WEBHOOK_URL (Vercel / CI only, not git).
  *
  * Spreadsheet: 1nGBUK_Do0MZZ-RzN4MSeJpFuJ-RpQUzrgnDTdBkVJBY
- * Tabs: Visited, Missed
+ * Tabs: Այցելել են, Չեն այցելել (legacy English names are renamed on first write)
  */
 
 const WEBHOOK_SECRET = 'REPLACE_WITH_SHEETS_WEBHOOK_SECRET';
 
-const TABS = {
+const LEGACY_TABS = {
   VISITED: 'Visited',
   MISSED: 'Missed',
 };
@@ -36,16 +36,54 @@ function doPost(event) {
       return jsonResponse({ error: 'invalid' });
     }
 
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(TABS[audience]);
+    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = resolveSheet(spreadsheet, audience, payload.tab);
     if (!sheet) {
       return jsonResponse({ error: 'sheet_missing' });
     }
 
+    ensureHeaders(sheet, payload.headers);
     sheet.appendRow(values);
     return jsonResponse({ ok: true });
   } catch (error) {
     return jsonResponse({ error: 'failed' });
   }
+}
+
+function resolveSheet(spreadsheet, audience, requestedName) {
+  if (typeof requestedName === 'string' && requestedName) {
+    const named = spreadsheet.getSheetByName(requestedName);
+    if (named) {
+      return named;
+    }
+  }
+
+  const legacy = spreadsheet.getSheetByName(LEGACY_TABS[audience]);
+  if (!legacy) {
+    return null;
+  }
+
+  if (typeof requestedName === 'string' && requestedName && legacy.getName() !== requestedName) {
+    legacy.setName(requestedName);
+  }
+
+  return legacy;
+}
+
+function ensureHeaders(sheet, headers) {
+  if (!Array.isArray(headers) || headers.length === 0) {
+    return;
+  }
+
+  const firstRow = sheet.getRange(1, 1, 1, headers.length).getValues()[0];
+  const same = headers.every(function (header, index) {
+    return String(firstRow[index] || '') === String(header);
+  });
+  if (same) {
+    return;
+  }
+
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
 }
 
 function jsonResponse(body) {
