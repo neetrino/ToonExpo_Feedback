@@ -1,4 +1,4 @@
-import { Home, Inbox, Sparkles } from 'lucide-react';
+import { CalendarDays, Home, Inbox, Sparkles } from 'lucide-react';
 import { IconBubble } from '@/components/icon-bubble';
 import { PageShell } from '@/components/page-shell';
 import { SuccessCheck } from '@/components/success-check';
@@ -7,6 +7,8 @@ import { Link } from '@/i18n/navigation';
 import { parseLocale } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+
+const VOL2_REGISTRATION_URL = 'https://bit.ly/te2v_feedback';
 
 type ThanksPageProps = {
   params: Promise<{ locale: string }>;
@@ -48,16 +50,27 @@ export default async function ThanksPage({ params }: ThanksPageProps) {
                 {t('impact')}
               </li>
             </ul>
-            <Link
-              href="/"
-              className={cn(
-                buttonVariants({ variant: 'gold', size: 'lg' }),
-                'mt-8 w-full sm:w-auto',
-              )}
-            >
-              <Home className="size-4" aria-hidden="true" />
-              {t('home')}
-            </Link>
+            <div className="mt-8 flex w-full flex-col gap-3 sm:items-center">
+              <a
+                href={VOL2_REGISTRATION_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ variant: 'gold', size: 'lg' }), 'w-full sm:w-auto')}
+              >
+                <CalendarDays className="size-4" aria-hidden="true" />
+                {t('register')}
+              </a>
+              <Link
+                href="/"
+                className={cn(
+                  buttonVariants({ variant: 'secondary', size: 'lg' }),
+                  'w-full sm:w-auto',
+                )}
+              >
+                <Home className="size-4" aria-hidden="true" />
+                {t('home')}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
