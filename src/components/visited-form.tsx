@@ -55,21 +55,21 @@ function VisitedFormClient() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const appLocale = locale === 'ru' ? 'ru' : 'hy';
-  const defaults = {
-    audience: 'VISITED' as const,
+  const appLocale: 'hy' | 'ru' = locale === 'ru' ? 'ru' : 'hy';
+  const defaults: VisitedFormValues = {
+    audience: 'VISITED',
     locale: appLocale,
     website: '',
     answers: {
-      problems: [] as string[],
+      problems: [],
       problemsOrgDetail: '',
-      visitGoals: [] as string[],
+      visitGoals: [],
       visitGoalsOther: '',
       propertyDetail: '',
       b2bDetail: '',
       expectationsImprove: '',
       vol2Factor: '',
-      vol2Wants: [] as string[],
+      vol2Wants: [],
       vol2WantsOther: '',
     },
   };
@@ -91,8 +91,9 @@ function VisitedFormClient() {
   usePersistFeedbackDraft({
     key: VISITED_DRAFT_KEY,
     step,
-    form,
     locale: appLocale,
+    getValues: () => form.getValues(),
+    watch: (callback) => form.watch((values) => callback(values)),
   });
 
   const problems = useWatch({ control: form.control, name: 'answers.problems' }) ?? [];

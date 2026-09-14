@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useSyncExternalStore, type ReactNode } from 'react';
-import type { FieldValues, UseFormReturn } from 'react-hook-form';
 import { saveFeedbackDraft } from '@/lib/feedback-draft';
 
 function emptySubscribe(): () => void {
@@ -25,26 +24,31 @@ export function ClientDraftGate({ children }: { children: ReactNode }) {
   return children;
 }
 
-export function usePersistFeedbackDraft<T extends FieldValues>({
+type DraftWatch = (callback: (values: unknown) => void) => { unsubscribe: () => void };
+
+export function usePersistFeedbackDraft({
   key,
   step,
-  form,
   locale,
+  getValues,
+  watch,
 }: {
   key: string;
   step: number;
-  form: UseFormReturn<T>;
   locale: 'hy' | 'ru';
+  getValues: () => unknown;
+  watch: DraftWatch;
 }): void {
   useEffect(() => {
-    function persist(values: T) {
-      saveFeedbackDraft(key, step, { ...values, locale, website: '' } as T);
+    function persist(values: unknown) {
+      const record = values && typeof values === 'object' ? values : {};
+      saveFeedbackDraft(key, step, { ...record, locale, website: '' });
     }
 
-    persist(form.getValues());
-    const subscription = form.watch((values) => {
-      persist(values as T);
+    persist(getValues());
+    const subscription = watch((values) => {
+      persist(values);
     });
     return () => subscription.unsubscribe();
-  }, [form, key, locale, step]);
+  }, [getValues, key, locale, step, watch]);
 }

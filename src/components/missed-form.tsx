@@ -48,17 +48,17 @@ function MissedFormClient() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const appLocale = locale === 'ru' ? 'ru' : 'hy';
-  const defaults = {
-    audience: 'MISSED' as const,
+  const appLocale: 'hy' | 'ru' = locale === 'ru' ? 'ru' : 'hy';
+  const defaults: MissedFormValues = {
+    audience: 'MISSED',
     locale: appLocale,
     website: '',
     answers: {
       noVisitOther: '',
-      wouldIncrease: [] as string[],
+      wouldIncrease: [],
       wouldIncreaseOther: '',
       vol2Factor: '',
-      vol2Motivation: [] as string[],
+      vol2Motivation: [],
       vol2MotivationOther: '',
     },
   };
@@ -77,8 +77,9 @@ function MissedFormClient() {
   usePersistFeedbackDraft({
     key: MISSED_DRAFT_KEY,
     step,
-    form,
     locale: appLocale,
+    getValues: () => form.getValues(),
+    watch: (callback) => form.watch((values) => callback(values)),
   });
 
   const reason = useWatch({ control: form.control, name: 'answers.noVisitReason' });
