@@ -25,7 +25,9 @@ import {
   type WantKey,
 } from '@/lib/feedback-options';
 import { visitedPayloadSchema, type VisitedFormValues } from '@/lib/feedback-schema';
+import { VISITED_DRAFT_KEY } from '@/lib/feedback-draft';
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
+import { useFeedbackDraft } from '@/lib/use-feedback-draft';
 
 const VISITED_STEP_FIELDS: FieldPath<VisitedFormValues>[][] = [
   ['answers.problems', 'answers.problemsOrgDetail'],
@@ -45,7 +47,6 @@ export function VisitedForm() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const [step, setStep] = useState(0);
   const [submitError, setSubmitError] = useState(false);
   const [lastStepInvalid, setLastStepInvalid] = useState(false);
 
@@ -70,6 +71,13 @@ export function VisitedForm() {
         vol2WantsOther: '',
       },
     },
+  });
+
+  const { step, setStep, bootstrapped, clearDraft } = useFeedbackDraft({
+    key: VISITED_DRAFT_KEY,
+    stepCount: VISITED_STEP_FIELDS.length,
+    form,
+    locale: locale === 'ru' ? 'ru' : 'hy',
   });
 
   const problems = useWatch({ control: form.control, name: 'answers.problems' }) ?? [];
@@ -153,6 +161,7 @@ export function VisitedForm() {
       setSubmitError(true);
       return;
     }
+    clearDraft();
     router.push('/thanks');
   }
 
@@ -169,6 +178,15 @@ export function VisitedForm() {
   }
 
   const lastIndex = VISITED_STEP_FIELDS.length - 1;
+
+  if (!bootstrapped) {
+    return (
+      <div
+        className="min-h-80 rounded-3xl border border-border bg-card p-5 sm:p-8"
+        aria-busy="true"
+      />
+    );
+  }
 
   return (
     <form

@@ -21,7 +21,9 @@ import {
   type WouldIncreaseKey,
 } from '@/lib/feedback-options';
 import { missedPayloadSchema, type MissedFormValues } from '@/lib/feedback-schema';
+import { MISSED_DRAFT_KEY } from '@/lib/feedback-draft';
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
+import { useFeedbackDraft } from '@/lib/use-feedback-draft';
 
 const MISSED_STEP_FIELDS: FieldPath<MissedFormValues>[][] = [
   ['answers.noVisitReason', 'answers.noVisitOther'],
@@ -38,7 +40,6 @@ export function MissedForm() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const [step, setStep] = useState(0);
   const [submitError, setSubmitError] = useState(false);
   const [lastStepInvalid, setLastStepInvalid] = useState(false);
 
@@ -59,6 +60,13 @@ export function MissedForm() {
         vol2MotivationOther: '',
       },
     },
+  });
+
+  const { step, setStep, bootstrapped, clearDraft } = useFeedbackDraft({
+    key: MISSED_DRAFT_KEY,
+    stepCount: MISSED_STEP_FIELDS.length,
+    form,
+    locale: locale === 'ru' ? 'ru' : 'hy',
   });
 
   const reason = useWatch({ control: form.control, name: 'answers.noVisitReason' });
@@ -119,6 +127,7 @@ export function MissedForm() {
       setSubmitError(true);
       return;
     }
+    clearDraft();
     router.push('/thanks');
   }
 
@@ -135,6 +144,15 @@ export function MissedForm() {
   }
 
   const lastIndex = MISSED_STEP_FIELDS.length - 1;
+
+  if (!bootstrapped) {
+    return (
+      <div
+        className="min-h-80 rounded-3xl border border-border bg-card p-5 sm:p-8"
+        aria-busy="true"
+      />
+    );
+  }
 
   return (
     <form
