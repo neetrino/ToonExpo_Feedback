@@ -60,6 +60,7 @@ export function mergeDraftValues<T extends object>(defaults: T, draft: unknown, 
     answers,
     locale,
     website: '',
+    audience: defaultsRecord.audience,
   } as T;
 }
 

@@ -59,6 +59,7 @@ describe('mergeDraftValues', () => {
     );
     expect(merged.locale).toBe('ru');
     expect(merged.website).toBe('');
+    expect(merged.audience).toBe('VISITED');
     expect(merged.answers.problems).toEqual(['parking']);
     expect(merged.answers.visitGoals).toEqual([]);
   });
