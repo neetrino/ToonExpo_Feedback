@@ -190,7 +190,8 @@
   "thanks": {
     "title": "Спасибо",
     "text": "Мы получили ваши ответы. Они помогут сделать следующий TOON EXPO лучше.",
-    "register": "Зарегистрироваться TOON EXPO Invest 2026 Vol. 2",
+    "registerLabel": "Зарегистрироваться",
+    "register": "TOON EXPO Invest 2026 Vol. 2",
     "home": "Вернуться на главную",
     "received": "Ответы уже у нас",
     "impact": "Помогут TOON EXPO 2026 Vol. 2"

@@ -51,15 +51,23 @@ export default async function ThanksPage({ params }: ThanksPageProps) {
               </li>
             </ul>
             <div className="mt-8 flex w-full flex-col gap-3 sm:items-center">
-              <a
-                href={VOL2_REGISTRATION_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: 'gold', size: 'lg' }), 'w-full sm:w-auto')}
-              >
-                <CalendarDays className="size-4" aria-hidden="true" />
-                {t('register')}
-              </a>
+              <div className="flex w-full flex-col items-center gap-2.5">
+                <p className="font-display text-sm font-semibold uppercase tracking-[0.22em] text-secondary">
+                  {t('registerLabel')}
+                </p>
+                <a
+                  href={VOL2_REGISTRATION_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    buttonVariants({ variant: 'gold', size: 'lg' }),
+                    'w-full whitespace-normal text-center leading-snug sm:w-auto sm:px-6',
+                  )}
+                >
+                  <CalendarDays className="size-4 shrink-0" aria-hidden="true" />
+                  {t('register')}
+                </a>
+              </div>
               <Link
                 href="/"
                 className={cn(
