@@ -397,20 +397,20 @@ function VisitedFormClient() {
                   icon={<CalendarDays className="size-4" />}
                   error={fieldState.error}
                 >
-                      <OptionRadioGroup
-                        name="vol2Plan"
-                        options={VOL2_PLAN_KEYS}
-                        value={field.value ?? ''}
-                        onChange={(value) => {
-                          field.onChange(value);
-                          if (lastStepInvalid) {
-                            form.clearErrors('answers.vol2Plan');
-                          }
-                        }}
-                        error={Boolean(fieldState.error)}
-                        groupRef={field.ref}
-                        getLabel={(key) => t(`visited.vol2Plan.${key}`)}
-                      />
+                  <OptionRadioGroup
+                    name="vol2Plan"
+                    options={VOL2_PLAN_KEYS}
+                    value={field.value ?? ''}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      if (lastStepInvalid) {
+                        form.clearErrors('answers.vol2Plan');
+                      }
+                    }}
+                    error={Boolean(fieldState.error)}
+                    groupRef={field.ref}
+                    getLabel={(key) => t(`visited.vol2Plan.${key}`)}
+                  />
                 </QuestionBlock>
               )}
             />
