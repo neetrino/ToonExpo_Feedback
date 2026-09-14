@@ -4,7 +4,7 @@ import { Building2, CalendarDays, HelpCircle, Lightbulb, Sparkles } from 'lucide
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { Controller, useForm, useWatch, type FieldPath } from 'react-hook-form';
+import { Controller, useForm, useWatch, type DefaultValues, type FieldPath } from 'react-hook-form';
 import { QuestionBlock, TextAreaField } from '@/components/form-fields';
 import { OptionCheckboxGroup, OptionRadioGroup } from '@/components/form-option-groups';
 import { FormWizard } from '@/components/form-wizard';
@@ -20,7 +20,12 @@ import {
   type MotivationKey,
   type WouldIncreaseKey,
 } from '@/lib/feedback-options';
-import { MISSED_DRAFT_KEY, clearFeedbackDraft, loadFeedbackDraft, mergeDraftValues } from '@/lib/feedback-draft';
+import {
+  MISSED_DRAFT_KEY,
+  clearFeedbackDraft,
+  loadFeedbackDraft,
+  mergeDraftValues,
+} from '@/lib/feedback-draft';
 import { missedPayloadSchema, type MissedFormValues } from '@/lib/feedback-schema';
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
 import { ClientDraftGate, usePersistFeedbackDraft } from '@/lib/use-feedback-draft';
@@ -49,7 +54,7 @@ function MissedFormClient() {
   const locale = useLocale();
   const router = useRouter();
   const appLocale: 'hy' | 'ru' = locale === 'ru' ? 'ru' : 'hy';
-  const defaults: MissedFormValues = {
+  const defaults: DefaultValues<MissedFormValues> = {
     audience: 'MISSED',
     locale: appLocale,
     website: '',
@@ -78,8 +83,7 @@ function MissedFormClient() {
     key: MISSED_DRAFT_KEY,
     step,
     locale: appLocale,
-    getValues: () => form.getValues(),
-    watch: (callback) => form.watch((values) => callback(values)),
+    form,
   });
 
   const reason = useWatch({ control: form.control, name: 'answers.noVisitReason' });

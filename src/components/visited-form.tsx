@@ -4,7 +4,7 @@ import { Building2, CalendarDays, CircleAlert, Handshake, Sparkles, Target } fro
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { Controller, useForm, useWatch, type FieldPath } from 'react-hook-form';
+import { Controller, useForm, useWatch, type DefaultValues, type FieldPath } from 'react-hook-form';
 import { QuestionBlock, ScoreField, TextAreaField } from '@/components/form-fields';
 import { OptionCheckboxGroup, OptionRadioGroup } from '@/components/form-option-groups';
 import { FormWizard } from '@/components/form-wizard';
@@ -24,7 +24,12 @@ import {
   type ProblemKey,
   type WantKey,
 } from '@/lib/feedback-options';
-import { VISITED_DRAFT_KEY, clearFeedbackDraft, loadFeedbackDraft, mergeDraftValues } from '@/lib/feedback-draft';
+import {
+  VISITED_DRAFT_KEY,
+  clearFeedbackDraft,
+  loadFeedbackDraft,
+  mergeDraftValues,
+} from '@/lib/feedback-draft';
 import { visitedPayloadSchema, type VisitedFormValues } from '@/lib/feedback-schema';
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
 import { ClientDraftGate, usePersistFeedbackDraft } from '@/lib/use-feedback-draft';
@@ -56,7 +61,7 @@ function VisitedFormClient() {
   const locale = useLocale();
   const router = useRouter();
   const appLocale: 'hy' | 'ru' = locale === 'ru' ? 'ru' : 'hy';
-  const defaults: VisitedFormValues = {
+  const defaults: DefaultValues<VisitedFormValues> = {
     audience: 'VISITED',
     locale: appLocale,
     website: '',
@@ -73,10 +78,7 @@ function VisitedFormClient() {
       vol2WantsOther: '',
     },
   };
-  const draft = loadFeedbackDraft<VisitedFormValues>(
-    VISITED_DRAFT_KEY,
-    VISITED_STEP_FIELDS.length,
-  );
+  const draft = loadFeedbackDraft<VisitedFormValues>(VISITED_DRAFT_KEY, VISITED_STEP_FIELDS.length);
   const [step, setStep] = useState(draft?.step ?? 0);
   const [submitError, setSubmitError] = useState(false);
   const [lastStepInvalid, setLastStepInvalid] = useState(false);
@@ -92,8 +94,7 @@ function VisitedFormClient() {
     key: VISITED_DRAFT_KEY,
     step,
     locale: appLocale,
-    getValues: () => form.getValues(),
-    watch: (callback) => form.watch((values) => callback(values)),
+    form,
   });
 
   const problems = useWatch({ control: form.control, name: 'answers.problems' }) ?? [];

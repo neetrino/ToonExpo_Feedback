@@ -8,7 +8,11 @@ function emptySubscribe(): () => void {
 }
 
 export function useIsClient(): boolean {
-  return useSyncExternalStore(emptySubscribe, () => true, () => false);
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 }
 
 export function ClientDraftGate({ children }: { children: ReactNode }) {
@@ -24,20 +28,21 @@ export function ClientDraftGate({ children }: { children: ReactNode }) {
   return children;
 }
 
-type DraftWatch = (callback: (values: unknown) => void) => { unsubscribe: () => void };
+type DraftForm = {
+  getValues(): unknown;
+  watch(callback: (values: unknown) => void): { unsubscribe: () => void };
+};
 
 export function usePersistFeedbackDraft({
   key,
   step,
   locale,
-  getValues,
-  watch,
+  form,
 }: {
   key: string;
   step: number;
   locale: 'hy' | 'ru';
-  getValues: () => unknown;
-  watch: DraftWatch;
+  form: DraftForm;
 }): void {
   useEffect(() => {
     function persist(values: unknown) {
@@ -45,10 +50,10 @@ export function usePersistFeedbackDraft({
       saveFeedbackDraft(key, step, { ...record, locale, website: '' });
     }
 
-    persist(getValues());
-    const subscription = watch((values) => {
+    persist(form.getValues());
+    const subscription = form.watch((values) => {
       persist(values);
     });
     return () => subscription.unsubscribe();
-  }, [getValues, key, locale, step, watch]);
+  }, [form, key, locale, step]);
 }

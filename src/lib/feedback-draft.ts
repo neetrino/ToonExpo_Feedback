@@ -19,7 +19,10 @@ export function clampDraftStep(step: number, stepCount: number): number {
   return Math.min(Math.max(step, 0), stepCount - 1);
 }
 
-export function parseFeedbackDraft<T>(raw: string | null, stepCount: number): FeedbackDraft<T> | null {
+export function parseFeedbackDraft<T>(
+  raw: string | null,
+  stepCount: number,
+): FeedbackDraft<T> | null {
   if (!raw) {
     return null;
   }
@@ -39,7 +42,11 @@ export function parseFeedbackDraft<T>(raw: string | null, stepCount: number): Fe
   }
 }
 
-export function mergeDraftValues<T extends object>(defaults: T, draft: unknown, locale: 'hy' | 'ru'): T {
+export function mergeDraftValues<T extends object>(
+  defaults: T,
+  draft: unknown,
+  locale: 'hy' | 'ru',
+): T {
   if (!draft || typeof draft !== 'object') {
     return { ...defaults, locale } as T;
   }
