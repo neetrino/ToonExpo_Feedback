@@ -51,6 +51,8 @@ export function VisitedForm() {
 
   const form = useForm<VisitedFormValues>({
     resolver: zodResolver(visitedPayloadSchema),
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
     defaultValues: {
       audience: 'VISITED',
       locale: locale === 'ru' ? 'ru' : 'hy',
@@ -85,7 +87,7 @@ export function VisitedForm() {
     const current = form.getValues('answers.problems') ?? [];
     if (value === 'no_problems') {
       form.setValue('answers.problems', current.includes(value) ? [] : ['no_problems'], {
-        shouldValidate: true,
+        shouldValidate: Boolean(form.formState.errors.answers?.problems),
       });
       return;
     }
@@ -93,7 +95,9 @@ export function VisitedForm() {
     const next = withoutNone.includes(value)
       ? withoutNone.filter((item) => item !== value)
       : [...withoutNone, value];
-    form.setValue('answers.problems', next, { shouldValidate: true });
+    form.setValue('answers.problems', next, {
+      shouldValidate: Boolean(form.formState.errors.answers?.problems),
+    });
   }
 
   function toggleGoal(value: GoalKey) {
@@ -101,7 +105,9 @@ export function VisitedForm() {
     const next = current.includes(value)
       ? current.filter((item) => item !== value)
       : [...current, value];
-    form.setValue('answers.visitGoals', next, { shouldValidate: true });
+    form.setValue('answers.visitGoals', next, {
+      shouldValidate: Boolean(form.formState.errors.answers?.visitGoals),
+    });
   }
 
   function toggleWant(value: WantKey) {
@@ -109,7 +115,9 @@ export function VisitedForm() {
     const next = current.includes(value)
       ? current.filter((item) => item !== value)
       : [...current, value];
-    form.setValue('answers.vol2Wants', next, { shouldValidate: true });
+    form.setValue('answers.vol2Wants', next, {
+      shouldValidate: lastStepInvalid || Boolean(form.formState.errors.answers?.vol2Wants),
+    });
   }
 
   async function goNext() {
@@ -118,11 +126,18 @@ export function VisitedForm() {
       scrollToFirstInvalidField();
       return;
     }
+    const nextFields = VISITED_STEP_FIELDS[step + 1];
+    if (nextFields) {
+      form.clearErrors(nextFields);
+    }
+    setLastStepInvalid(false);
     setStep((current) => current + 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function goBack() {
+    form.clearErrors(VISITED_STEP_FIELDS[step]);
+    setLastStepInvalid(false);
     setStep((current) => Math.max(0, current - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }

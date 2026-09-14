@@ -44,6 +44,8 @@ export function MissedForm() {
 
   const form = useForm<MissedFormValues>({
     resolver: zodResolver(missedPayloadSchema),
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
     defaultValues: {
       audience: 'MISSED',
       locale: locale === 'ru' ? 'ru' : 'hy',
@@ -69,7 +71,9 @@ export function MissedForm() {
     const next = current.includes(value)
       ? current.filter((item) => item !== value)
       : [...current, value];
-    form.setValue('answers.wouldIncrease', next, { shouldValidate: true });
+    form.setValue('answers.wouldIncrease', next, {
+      shouldValidate: Boolean(form.formState.errors.answers?.wouldIncrease),
+    });
   }
 
   function toggleMotivation(value: MotivationKey) {
@@ -77,7 +81,9 @@ export function MissedForm() {
     const next = current.includes(value)
       ? current.filter((item) => item !== value)
       : [...current, value];
-    form.setValue('answers.vol2Motivation', next, { shouldValidate: true });
+    form.setValue('answers.vol2Motivation', next, {
+      shouldValidate: lastStepInvalid || Boolean(form.formState.errors.answers?.vol2Motivation),
+    });
   }
 
   async function goNext() {
@@ -86,11 +92,18 @@ export function MissedForm() {
       scrollToFirstInvalidField();
       return;
     }
+    const nextFields = MISSED_STEP_FIELDS[step + 1];
+    if (nextFields) {
+      form.clearErrors(nextFields);
+    }
+    setLastStepInvalid(false);
     setStep((current) => current + 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function goBack() {
+    form.clearErrors(MISSED_STEP_FIELDS[step]);
+    setLastStepInvalid(false);
     setStep((current) => Math.max(0, current - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
