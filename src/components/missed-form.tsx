@@ -28,6 +28,7 @@ import {
 } from '@/lib/feedback-draft';
 import { missedPayloadSchema, type MissedFormValues } from '@/lib/feedback-schema';
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
+import { validateWizardStep } from '@/lib/step-validation';
 import { ClientDraftGate, usePersistFeedbackDraft } from '@/lib/use-feedback-draft';
 
 const MISSED_STEP_FIELDS: FieldPath<MissedFormValues>[][] = [
@@ -106,20 +107,22 @@ function MissedFormClient() {
     const next = current.includes(value)
       ? current.filter((item) => item !== value)
       : [...current, value];
-    form.setValue('answers.vol2Motivation', next, {
-      shouldValidate: lastStepInvalid || Boolean(form.formState.errors.answers?.vol2Motivation),
-    });
+    form.setValue('answers.vol2Motivation', next, { shouldValidate: false });
+    if (lastStepInvalid && next.length > 0) {
+      form.clearErrors('answers.vol2Motivation');
+    }
   }
 
-  async function goNext() {
-    const valid = await form.trigger(MISSED_STEP_FIELDS[step], { shouldFocus: true });
+  function goNext() {
+    const valid = validateWizardStep(
+      missedPayloadSchema,
+      form.getValues(),
+      MISSED_STEP_FIELDS[step],
+      form,
+    );
     if (!valid) {
       scrollToFirstInvalidField();
       return;
-    }
-    const nextFields = MISSED_STEP_FIELDS[step + 1];
-    if (nextFields) {
-      form.clearErrors(nextFields);
     }
     setLastStepInvalid(false);
     setStep((current) => current + 1);
@@ -127,7 +130,7 @@ function MissedFormClient() {
   }
 
   function goBack() {
-    form.clearErrors(MISSED_STEP_FIELDS[step]);
+    form.clearErrors();
     setLastStepInvalid(false);
     setStep((current) => Math.max(0, current - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -150,13 +153,18 @@ function MissedFormClient() {
 
   async function submitLastStep() {
     setSubmitError(false);
-    setLastStepInvalid(false);
-    const valid = await form.trigger(MISSED_STEP_FIELDS[step], { shouldFocus: true });
+    const valid = validateWizardStep(
+      missedPayloadSchema,
+      form.getValues(),
+      MISSED_STEP_FIELDS[step],
+      form,
+    );
     if (!valid) {
       setLastStepInvalid(true);
       scrollToFirstInvalidField();
       return;
     }
+    setLastStepInvalid(false);
     await form.handleSubmit(onSubmit, scrollToFirstInvalidField)();
   }
 
@@ -182,8 +190,9 @@ function MissedFormClient() {
         isLast={step === lastIndex}
         stepError={lastStepInvalid ? t('errors.incomplete') : undefined}
         onBack={goBack}
-        onNext={() => {
-          void goNext();
+        onNext={goNext}
+        onSubmit={() => {
+          void submitLastStep();
         }}
       >
         {step === 0 ? (
@@ -282,7 +291,12 @@ function MissedFormClient() {
                     name="vol2Plan"
                     options={VOL2_PLAN_KEYS}
                     value={field.value ?? ''}
-                    onChange={field.onChange}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      if (lastStepInvalid) {
+                        form.clearErrors('answers.vol2Plan');
+                      }
+                    }}
                     error={Boolean(fieldState.error)}
                     groupRef={field.ref}
                     getLabel={(key) => t(`missed.vol2Plan.${key}`)}

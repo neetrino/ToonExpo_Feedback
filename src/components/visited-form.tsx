@@ -32,6 +32,7 @@ import {
 } from '@/lib/feedback-draft';
 import { visitedPayloadSchema, type VisitedFormValues } from '@/lib/feedback-schema';
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
+import { validateWizardStep } from '@/lib/step-validation';
 import { ClientDraftGate, usePersistFeedbackDraft } from '@/lib/use-feedback-draft';
 
 const VISITED_STEP_FIELDS: FieldPath<VisitedFormValues>[][] = [
@@ -140,20 +141,22 @@ function VisitedFormClient() {
     const next = current.includes(value)
       ? current.filter((item) => item !== value)
       : [...current, value];
-    form.setValue('answers.vol2Wants', next, {
-      shouldValidate: lastStepInvalid || Boolean(form.formState.errors.answers?.vol2Wants),
-    });
+    form.setValue('answers.vol2Wants', next, { shouldValidate: false });
+    if (lastStepInvalid && next.length > 0) {
+      form.clearErrors('answers.vol2Wants');
+    }
   }
 
-  async function goNext() {
-    const valid = await form.trigger(VISITED_STEP_FIELDS[step], { shouldFocus: true });
+  function goNext() {
+    const valid = validateWizardStep(
+      visitedPayloadSchema,
+      form.getValues(),
+      VISITED_STEP_FIELDS[step],
+      form,
+    );
     if (!valid) {
       scrollToFirstInvalidField();
       return;
-    }
-    const nextFields = VISITED_STEP_FIELDS[step + 1];
-    if (nextFields) {
-      form.clearErrors(nextFields);
     }
     setLastStepInvalid(false);
     setStep((current) => current + 1);
@@ -161,7 +164,7 @@ function VisitedFormClient() {
   }
 
   function goBack() {
-    form.clearErrors(VISITED_STEP_FIELDS[step]);
+    form.clearErrors();
     setLastStepInvalid(false);
     setStep((current) => Math.max(0, current - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -184,13 +187,18 @@ function VisitedFormClient() {
 
   async function submitLastStep() {
     setSubmitError(false);
-    setLastStepInvalid(false);
-    const valid = await form.trigger(VISITED_STEP_FIELDS[step], { shouldFocus: true });
+    const valid = validateWizardStep(
+      visitedPayloadSchema,
+      form.getValues(),
+      VISITED_STEP_FIELDS[step],
+      form,
+    );
     if (!valid) {
       setLastStepInvalid(true);
       scrollToFirstInvalidField();
       return;
     }
+    setLastStepInvalid(false);
     await form.handleSubmit(onSubmit, scrollToFirstInvalidField)();
   }
 
@@ -216,8 +224,9 @@ function VisitedFormClient() {
         isLast={step === lastIndex}
         stepError={lastStepInvalid ? t('errors.incomplete') : undefined}
         onBack={goBack}
-        onNext={() => {
-          void goNext();
+        onNext={goNext}
+        onSubmit={() => {
+          void submitLastStep();
         }}
       >
         {step === 0 ? (
@@ -388,15 +397,20 @@ function VisitedFormClient() {
                   icon={<CalendarDays className="size-4" />}
                   error={fieldState.error}
                 >
-                  <OptionRadioGroup
-                    name="vol2Plan"
-                    options={VOL2_PLAN_KEYS}
-                    value={field.value ?? ''}
-                    onChange={field.onChange}
-                    error={Boolean(fieldState.error)}
-                    groupRef={field.ref}
-                    getLabel={(key) => t(`visited.vol2Plan.${key}`)}
-                  />
+                      <OptionRadioGroup
+                        name="vol2Plan"
+                        options={VOL2_PLAN_KEYS}
+                        value={field.value ?? ''}
+                        onChange={(value) => {
+                          field.onChange(value);
+                          if (lastStepInvalid) {
+                            form.clearErrors('answers.vol2Plan');
+                          }
+                        }}
+                        error={Boolean(fieldState.error)}
+                        groupRef={field.ref}
+                        getLabel={(key) => t(`visited.vol2Plan.${key}`)}
+                      />
                 </QuestionBlock>
               )}
             />

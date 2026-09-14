@@ -16,6 +16,7 @@ type FormWizardProps = {
   isLast: boolean;
   onBack: () => void;
   onNext: () => void;
+  onSubmit: () => void;
   stepError?: string;
   children: ReactNode;
 };
@@ -27,6 +28,7 @@ export function FormWizard({
   isLast,
   onBack,
   onNext,
+  onSubmit,
   stepError,
   children,
 }: FormWizardProps) {
@@ -107,10 +109,12 @@ export function FormWizard({
           </Button>
           {isLast ? (
             <Button
-              type="submit"
+              key={`submit-${current}`}
+              type="button"
               variant="gold"
               size="lg"
               className="flex-[2]"
+              onClick={onSubmit}
               disabled={isSubmitting}
             >
               {isSubmitting ? t('sending') : t('submit')}
@@ -118,6 +122,7 @@ export function FormWizard({
             </Button>
           ) : (
             <Button
+              key={`next-${current}`}
               type="button"
               size="lg"
               className="flex-[2]"
