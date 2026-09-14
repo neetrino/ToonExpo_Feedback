@@ -24,10 +24,10 @@ import {
   type ProblemKey,
   type WantKey,
 } from '@/lib/feedback-options';
+import { VISITED_DRAFT_KEY, clearFeedbackDraft, loadFeedbackDraft, mergeDraftValues } from '@/lib/feedback-draft';
 import { visitedPayloadSchema, type VisitedFormValues } from '@/lib/feedback-schema';
-import { VISITED_DRAFT_KEY } from '@/lib/feedback-draft';
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
-import { useFeedbackDraft } from '@/lib/use-feedback-draft';
+import { ClientDraftGate, usePersistFeedbackDraft } from '@/lib/use-feedback-draft';
 
 const VISITED_STEP_FIELDS: FieldPath<VisitedFormValues>[][] = [
   ['answers.problems', 'answers.problemsOrgDetail'],
@@ -44,9 +44,40 @@ const VISITED_STEP_FIELDS: FieldPath<VisitedFormValues>[][] = [
 ];
 
 export function VisitedForm() {
+  return (
+    <ClientDraftGate>
+      <VisitedFormClient />
+    </ClientDraftGate>
+  );
+}
+
+function VisitedFormClient() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
+  const appLocale = locale === 'ru' ? 'ru' : 'hy';
+  const defaults = {
+    audience: 'VISITED' as const,
+    locale: appLocale,
+    website: '',
+    answers: {
+      problems: [] as string[],
+      problemsOrgDetail: '',
+      visitGoals: [] as string[],
+      visitGoalsOther: '',
+      propertyDetail: '',
+      b2bDetail: '',
+      expectationsImprove: '',
+      vol2Factor: '',
+      vol2Wants: [] as string[],
+      vol2WantsOther: '',
+    },
+  };
+  const draft = loadFeedbackDraft<VisitedFormValues>(
+    VISITED_DRAFT_KEY,
+    VISITED_STEP_FIELDS.length,
+  );
+  const [step, setStep] = useState(draft?.step ?? 0);
   const [submitError, setSubmitError] = useState(false);
   const [lastStepInvalid, setLastStepInvalid] = useState(false);
 
@@ -54,30 +85,14 @@ export function VisitedForm() {
     resolver: zodResolver(visitedPayloadSchema),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
-    defaultValues: {
-      audience: 'VISITED',
-      locale: locale === 'ru' ? 'ru' : 'hy',
-      website: '',
-      answers: {
-        problems: [],
-        problemsOrgDetail: '',
-        visitGoals: [],
-        visitGoalsOther: '',
-        propertyDetail: '',
-        b2bDetail: '',
-        expectationsImprove: '',
-        vol2Factor: '',
-        vol2Wants: [],
-        vol2WantsOther: '',
-      },
-    },
+    defaultValues: mergeDraftValues(defaults, draft?.values, appLocale),
   });
 
-  const { step, setStep, bootstrapped, clearDraft } = useFeedbackDraft({
+  usePersistFeedbackDraft({
     key: VISITED_DRAFT_KEY,
-    stepCount: VISITED_STEP_FIELDS.length,
+    step,
     form,
-    locale: locale === 'ru' ? 'ru' : 'hy',
+    locale: appLocale,
   });
 
   const problems = useWatch({ control: form.control, name: 'answers.problems' }) ?? [];
@@ -161,7 +176,7 @@ export function VisitedForm() {
       setSubmitError(true);
       return;
     }
-    clearDraft();
+    clearFeedbackDraft(VISITED_DRAFT_KEY);
     router.push('/thanks');
   }
 
@@ -178,15 +193,6 @@ export function VisitedForm() {
   }
 
   const lastIndex = VISITED_STEP_FIELDS.length - 1;
-
-  if (!bootstrapped) {
-    return (
-      <div
-        className="min-h-80 rounded-3xl border border-border bg-card p-5 sm:p-8"
-        aria-busy="true"
-      />
-    );
-  }
 
   return (
     <form

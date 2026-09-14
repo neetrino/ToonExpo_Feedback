@@ -1,52 +1,43 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import { useSyncExternalStore } from 'react';
 import type { FieldValues, UseFormReturn } from 'react-hook-form';
-import {
-  clearFeedbackDraft,
-  loadFeedbackDraft,
-  mergeDraftValues,
-  saveFeedbackDraft,
-} from '@/lib/feedback-draft';
+import { saveFeedbackDraft } from '@/lib/feedback-draft';
 
-type UseFeedbackDraftOptions<T extends FieldValues> = {
-  key: string;
-  stepCount: number;
-  form: UseFormReturn<T>;
-  locale: 'hy' | 'ru';
-};
+function emptySubscribe(): () => void {
+  return () => undefined;
+}
 
-export function useFeedbackDraft<T extends FieldValues>({
+export function useIsClient(): boolean {
+  return useSyncExternalStore(emptySubscribe, () => true, () => false);
+}
+
+export function ClientDraftGate({ children }: { children: ReactNode }) {
+  const isClient = useIsClient();
+  if (!isClient) {
+    return (
+      <div
+        className="min-h-80 rounded-3xl border border-border bg-card p-5 sm:p-8"
+        aria-busy="true"
+      />
+    );
+  }
+  return children;
+}
+
+export function usePersistFeedbackDraft<T extends FieldValues>({
   key,
-  stepCount,
+  step,
   form,
   locale,
-}: UseFeedbackDraftOptions<T>): {
+}: {
+  key: string;
   step: number;
-  setStep: (value: number | ((current: number) => number)) => void;
-  bootstrapped: boolean;
-  clearDraft: () => void;
-} {
-  const [step, setStep] = useState(0);
-  const [bootstrapped, setBootstrapped] = useState(false);
-  const formRef = useRef(form);
-  formRef.current = form;
-
+  form: UseFormReturn<T>;
+  locale: 'hy' | 'ru';
+}): void {
   useEffect(() => {
-    const currentForm = formRef.current;
-    const draft = loadFeedbackDraft<T>(key, stepCount);
-    if (draft) {
-      currentForm.reset(mergeDraftValues(currentForm.getValues(), draft.values, locale));
-      setStep(draft.step);
-    }
-    setBootstrapped(true);
-  }, [key, stepCount, locale]);
-
-  useEffect(() => {
-    if (!bootstrapped) {
-      return;
-    }
-
     function persist(values: T) {
       saveFeedbackDraft(key, step, { ...values, locale, website: '' } as T);
     }
@@ -56,14 +47,5 @@ export function useFeedbackDraft<T extends FieldValues>({
       persist(values as T);
     });
     return () => subscription.unsubscribe();
-  }, [bootstrapped, step, key, locale, form]);
-
-  return {
-    step,
-    setStep,
-    bootstrapped,
-    clearDraft: () => {
-      clearFeedbackDraft(key);
-    },
-  };
+  }, [form, key, locale, step]);
 }

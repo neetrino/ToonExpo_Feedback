@@ -20,10 +20,10 @@ import {
   type MotivationKey,
   type WouldIncreaseKey,
 } from '@/lib/feedback-options';
+import { MISSED_DRAFT_KEY, clearFeedbackDraft, loadFeedbackDraft, mergeDraftValues } from '@/lib/feedback-draft';
 import { missedPayloadSchema, type MissedFormValues } from '@/lib/feedback-schema';
-import { MISSED_DRAFT_KEY } from '@/lib/feedback-draft';
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
-import { useFeedbackDraft } from '@/lib/use-feedback-draft';
+import { ClientDraftGate, usePersistFeedbackDraft } from '@/lib/use-feedback-draft';
 
 const MISSED_STEP_FIELDS: FieldPath<MissedFormValues>[][] = [
   ['answers.noVisitReason', 'answers.noVisitOther'],
@@ -37,9 +37,33 @@ const MISSED_STEP_FIELDS: FieldPath<MissedFormValues>[][] = [
 ];
 
 export function MissedForm() {
+  return (
+    <ClientDraftGate>
+      <MissedFormClient />
+    </ClientDraftGate>
+  );
+}
+
+function MissedFormClient() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
+  const appLocale = locale === 'ru' ? 'ru' : 'hy';
+  const defaults = {
+    audience: 'MISSED' as const,
+    locale: appLocale,
+    website: '',
+    answers: {
+      noVisitOther: '',
+      wouldIncrease: [] as string[],
+      wouldIncreaseOther: '',
+      vol2Factor: '',
+      vol2Motivation: [] as string[],
+      vol2MotivationOther: '',
+    },
+  };
+  const draft = loadFeedbackDraft<MissedFormValues>(MISSED_DRAFT_KEY, MISSED_STEP_FIELDS.length);
+  const [step, setStep] = useState(draft?.step ?? 0);
   const [submitError, setSubmitError] = useState(false);
   const [lastStepInvalid, setLastStepInvalid] = useState(false);
 
@@ -47,26 +71,14 @@ export function MissedForm() {
     resolver: zodResolver(missedPayloadSchema),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
-    defaultValues: {
-      audience: 'MISSED',
-      locale: locale === 'ru' ? 'ru' : 'hy',
-      website: '',
-      answers: {
-        noVisitOther: '',
-        wouldIncrease: [],
-        wouldIncreaseOther: '',
-        vol2Factor: '',
-        vol2Motivation: [],
-        vol2MotivationOther: '',
-      },
-    },
+    defaultValues: mergeDraftValues(defaults, draft?.values, appLocale),
   });
 
-  const { step, setStep, bootstrapped, clearDraft } = useFeedbackDraft({
+  usePersistFeedbackDraft({
     key: MISSED_DRAFT_KEY,
-    stepCount: MISSED_STEP_FIELDS.length,
+    step,
     form,
-    locale: locale === 'ru' ? 'ru' : 'hy',
+    locale: appLocale,
   });
 
   const reason = useWatch({ control: form.control, name: 'answers.noVisitReason' });
