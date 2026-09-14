@@ -1,4 +1,4 @@
-import { Home, Inbox, Sparkles } from 'lucide-react';
+import { CalendarDays, ChevronDown, Home, Inbox, Sparkles } from 'lucide-react';
 import { IconBubble } from '@/components/icon-bubble';
 import { PageShell } from '@/components/page-shell';
 import { SuccessCheck } from '@/components/success-check';
@@ -7,6 +7,8 @@ import { Link } from '@/i18n/navigation';
 import { parseLocale } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+
+const VOL2_REGISTRATION_URL = 'https://bit.ly/te2v_feedback';
 
 type ThanksPageProps = {
   params: Promise<{ locale: string }>;
@@ -48,16 +50,44 @@ export default async function ThanksPage({ params }: ThanksPageProps) {
                 {t('impact')}
               </li>
             </ul>
-            <Link
-              href="/"
-              className={cn(
-                buttonVariants({ variant: 'gold', size: 'lg' }),
-                'mt-8 w-full sm:w-auto',
-              )}
-            >
-              <Home className="size-4" aria-hidden="true" />
-              {t('home')}
-            </Link>
+            <div className="mt-8 flex w-full flex-col gap-3 sm:items-center">
+              <div className="w-full rounded-[1.75rem] border border-highlight/50 bg-highlight/15 px-4 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">
+                <div className="flex flex-col items-center gap-1.5">
+                  <p className="font-display text-xl font-extrabold tracking-tight text-primary">
+                    {t('registerLabel')}
+                  </p>
+                  <p className="max-w-[16rem] text-sm leading-snug text-secondary">
+                    {t('registerHint')}
+                  </p>
+                  <ChevronDown
+                    className="mt-1 size-5 text-secondary motion-safe:animate-bounce"
+                    aria-hidden="true"
+                  />
+                </div>
+                <a
+                  href={VOL2_REGISTRATION_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    buttonVariants({ variant: 'gold', size: 'lg' }),
+                    'mt-1 w-full whitespace-normal text-center leading-snug shadow-[0_8px_20px_rgba(0,48,61,0.12)]',
+                  )}
+                >
+                  <CalendarDays className="size-4 shrink-0" aria-hidden="true" />
+                  {t('register')}
+                </a>
+              </div>
+              <Link
+                href="/"
+                className={cn(
+                  buttonVariants({ variant: 'secondary', size: 'lg' }),
+                  'w-full sm:w-auto',
+                )}
+              >
+                <Home className="size-4" aria-hidden="true" />
+                {t('home')}
+              </Link>
+            </div>
           </div>
         </div>
       </div>

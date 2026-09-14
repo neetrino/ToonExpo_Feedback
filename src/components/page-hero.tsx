@@ -23,7 +23,7 @@ export function PageHero({
           {icon}
         </div>
       ) : null}
-      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">{kicker}</p>
+      <p className="text-[11px] font-semibold tracking-[0.14em] text-accent">{kicker}</p>
       <h1 className="mt-3 font-display text-[1.7rem] font-bold leading-tight tracking-tight sm:text-4xl">
         {title}
       </h1>

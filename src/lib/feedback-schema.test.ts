@@ -48,6 +48,22 @@ describe('visitedPayloadSchema', () => {
     expect(parsed.answers.problems).toEqual(['parking']);
   });
 
+  it('rejects duplicate option keys', () => {
+    const result = visitedPayloadSchema.safeParse({
+      ...visitedBase,
+      answers: { ...visitedBase.answers, problems: ['parking', 'parking'] },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('neutralizes spreadsheet formulas in free text', () => {
+    const parsed = visitedPayloadSchema.parse({
+      ...visitedBase,
+      answers: { ...visitedBase.answers, visitGoalsOther: '=cmd' },
+    });
+    expect(parsed.answers.visitGoalsOther).toBe("'=cmd");
+  });
+
   it('rejects no_problems together with another problem', () => {
     const result = visitedPayloadSchema.safeParse({
       ...visitedBase,
@@ -108,6 +124,14 @@ describe('visitedPayloadSchema', () => {
     const result = visitedPayloadSchema.safeParse({
       ...visitedBase,
       answers: { ...visitedBase.answers, vol2Plan: 'undecided', vol2Factor: '' },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('requires a vol2 plan on the last visited step', () => {
+    const result = visitedPayloadSchema.safeParse({
+      ...visitedBase,
+      answers: { ...visitedBase.answers, vol2Plan: undefined },
     });
     expect(result.success).toBe(false);
   });

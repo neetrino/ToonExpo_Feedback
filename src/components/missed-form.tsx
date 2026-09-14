@@ -4,10 +4,11 @@ import { Building2, CalendarDays, HelpCircle, Lightbulb, Sparkles } from 'lucide
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { Controller, useForm, useWatch, type FieldPath } from 'react-hook-form';
+import { Controller, useForm, useWatch, type DefaultValues, type FieldPath } from 'react-hook-form';
 import { QuestionBlock, TextAreaField } from '@/components/form-fields';
 import { OptionCheckboxGroup, OptionRadioGroup } from '@/components/form-option-groups';
 import { FormWizard } from '@/components/form-wizard';
+import { HoneypotField } from '@/components/honeypot-field';
 import { useRouter } from '@/i18n/navigation';
 import {
   MOTIVATION_KEYS,
@@ -19,8 +20,16 @@ import {
   type MotivationKey,
   type WouldIncreaseKey,
 } from '@/lib/feedback-options';
+import {
+  MISSED_DRAFT_KEY,
+  clearFeedbackDraft,
+  loadFeedbackDraft,
+  mergeDraftValues,
+} from '@/lib/feedback-draft';
 import { missedPayloadSchema, type MissedFormValues } from '@/lib/feedback-schema';
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
+import { validateWizardStep } from '@/lib/step-validation';
+import { ClientDraftGate, usePersistFeedbackDraft } from '@/lib/use-feedback-draft';
 
 const MISSED_STEP_FIELDS: FieldPath<MissedFormValues>[][] = [
   ['answers.noVisitReason', 'answers.noVisitOther'],
@@ -34,27 +43,48 @@ const MISSED_STEP_FIELDS: FieldPath<MissedFormValues>[][] = [
 ];
 
 export function MissedForm() {
+  return (
+    <ClientDraftGate>
+      <MissedFormClient />
+    </ClientDraftGate>
+  );
+}
+
+function MissedFormClient() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  const appLocale: 'hy' | 'ru' = locale === 'ru' ? 'ru' : 'hy';
+  const defaults: DefaultValues<MissedFormValues> = {
+    audience: 'MISSED',
+    locale: appLocale,
+    website: '',
+    answers: {
+      noVisitOther: '',
+      wouldIncrease: [],
+      wouldIncreaseOther: '',
+      vol2Factor: '',
+      vol2Motivation: [],
+      vol2MotivationOther: '',
+    },
+  };
+  const draft = loadFeedbackDraft<MissedFormValues>(MISSED_DRAFT_KEY, MISSED_STEP_FIELDS.length);
+  const [step, setStep] = useState(draft?.step ?? 0);
   const [submitError, setSubmitError] = useState(false);
+  const [lastStepInvalid, setLastStepInvalid] = useState(false);
 
   const form = useForm<MissedFormValues>({
     resolver: zodResolver(missedPayloadSchema),
-    defaultValues: {
-      audience: 'MISSED',
-      locale: locale === 'ru' ? 'ru' : 'hy',
-      website: '',
-      answers: {
-        noVisitOther: '',
-        wouldIncrease: [],
-        wouldIncreaseOther: '',
-        vol2Factor: '',
-        vol2Motivation: [],
-        vol2MotivationOther: '',
-      },
-    },
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
+    defaultValues: mergeDraftValues(defaults, draft?.values, appLocale),
+  });
+
+  usePersistFeedbackDraft({
+    key: MISSED_DRAFT_KEY,
+    step,
+    locale: appLocale,
+    form,
   });
 
   const reason = useWatch({ control: form.control, name: 'answers.noVisitReason' });
@@ -67,7 +97,9 @@ export function MissedForm() {
     const next = current.includes(value)
       ? current.filter((item) => item !== value)
       : [...current, value];
-    form.setValue('answers.wouldIncrease', next, { shouldValidate: true });
+    form.setValue('answers.wouldIncrease', next, {
+      shouldValidate: Boolean(form.formState.errors.answers?.wouldIncrease),
+    });
   }
 
   function toggleMotivation(value: MotivationKey) {
@@ -75,19 +107,31 @@ export function MissedForm() {
     const next = current.includes(value)
       ? current.filter((item) => item !== value)
       : [...current, value];
-    form.setValue('answers.vol2Motivation', next, { shouldValidate: true });
+    form.setValue('answers.vol2Motivation', next, { shouldValidate: false });
+    if (lastStepInvalid && next.length > 0) {
+      form.clearErrors('answers.vol2Motivation');
+    }
   }
 
-  async function goNext() {
-    const valid = await form.trigger(MISSED_STEP_FIELDS[step], { shouldFocus: true });
+  function goNext() {
+    const valid = validateWizardStep(
+      missedPayloadSchema,
+      form.getValues(),
+      MISSED_STEP_FIELDS[step],
+      form,
+    );
     if (!valid) {
+      scrollToFirstInvalidField();
       return;
     }
+    setLastStepInvalid(false);
     setStep((current) => current + 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function goBack() {
+    form.clearErrors();
+    setLastStepInvalid(false);
     setStep((current) => Math.max(0, current - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -103,21 +147,39 @@ export function MissedForm() {
       setSubmitError(true);
       return;
     }
+    clearFeedbackDraft(MISSED_DRAFT_KEY);
     router.push('/thanks');
+  }
+
+  async function submitLastStep() {
+    setSubmitError(false);
+    const valid = validateWizardStep(
+      missedPayloadSchema,
+      form.getValues(),
+      MISSED_STEP_FIELDS[step],
+      form,
+    );
+    if (!valid) {
+      setLastStepInvalid(true);
+      scrollToFirstInvalidField();
+      return;
+    }
+    setLastStepInvalid(false);
+    await form.handleSubmit(onSubmit, scrollToFirstInvalidField)();
   }
 
   const lastIndex = MISSED_STEP_FIELDS.length - 1;
 
   return (
     <form
-      className="rounded-3xl border border-border bg-card p-5 shadow-[0_8px_32px_rgba(0,48,61,0.08)] sm:p-8"
+      className="relative rounded-3xl border border-border bg-card p-5 shadow-[0_8px_32px_rgba(0,48,61,0.08)] sm:p-8"
       onSubmit={(event) => {
         event.preventDefault();
         if (step < lastIndex) {
           void goNext();
           return;
         }
-        void form.handleSubmit(onSubmit, scrollToFirstInvalidField)(event);
+        void submitLastStep();
       }}
       noValidate
     >
@@ -126,9 +188,11 @@ export function MissedForm() {
         total={MISSED_STEP_FIELDS.length}
         isSubmitting={form.formState.isSubmitting}
         isLast={step === lastIndex}
+        stepError={lastStepInvalid ? t('errors.incomplete') : undefined}
         onBack={goBack}
-        onNext={() => {
-          void goNext();
+        onNext={goNext}
+        onSubmit={() => {
+          void submitLastStep();
         }}
       >
         {step === 0 ? (
@@ -148,6 +212,7 @@ export function MissedForm() {
                     value={field.value ?? ''}
                     onChange={field.onChange}
                     error={Boolean(fieldState.error)}
+                    groupRef={field.ref}
                     getLabel={(key) => t(`missed.reasons.${key}`)}
                   />
                 </QuestionBlock>
@@ -160,12 +225,7 @@ export function MissedForm() {
                 error={form.formState.errors.answers?.noVisitOther}
               />
             ) : null}
-            <input
-              className="hidden"
-              tabIndex={-1}
-              autoComplete="off"
-              {...form.register('website')}
-            />
+            <HoneypotField registration={form.register('website')} />
           </>
         ) : null}
 
@@ -207,6 +267,7 @@ export function MissedForm() {
                     value={field.value ?? ''}
                     onChange={field.onChange}
                     error={Boolean(fieldState.error)}
+                    groupRef={field.ref}
                     getLabel={(key) => t(`missed.relevance.${key}`)}
                   />
                 </QuestionBlock>
@@ -230,8 +291,14 @@ export function MissedForm() {
                     name="vol2Plan"
                     options={VOL2_PLAN_KEYS}
                     value={field.value ?? ''}
-                    onChange={field.onChange}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      if (lastStepInvalid) {
+                        form.clearErrors('answers.vol2Plan');
+                      }
+                    }}
                     error={Boolean(fieldState.error)}
+                    groupRef={field.ref}
                     getLabel={(key) => t(`missed.vol2Plan.${key}`)}
                   />
                 </QuestionBlock>

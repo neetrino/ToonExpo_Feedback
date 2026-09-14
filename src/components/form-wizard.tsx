@@ -16,6 +16,8 @@ type FormWizardProps = {
   isLast: boolean;
   onBack: () => void;
   onNext: () => void;
+  onSubmit: () => void;
+  stepError?: string;
   children: ReactNode;
 };
 
@@ -26,6 +28,8 @@ export function FormWizard({
   isLast,
   onBack,
   onNext,
+  onSubmit,
+  stepError,
   children,
 }: FormWizardProps) {
   const t = useTranslations('common');
@@ -87,6 +91,11 @@ export function FormWizard({
       <div className="pointer-events-none h-24 md:hidden" aria-hidden="true" />
 
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md md:static md:mt-10 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
+        {stepError ? (
+          <p className="mx-auto mb-2 max-w-3xl text-sm text-destructive" role="alert">
+            {stepError}
+          </p>
+        ) : null}
         <div className="mx-auto flex max-w-3xl gap-3">
           <Button
             type="button"
@@ -100,10 +109,12 @@ export function FormWizard({
           </Button>
           {isLast ? (
             <Button
-              type="submit"
+              key={`submit-${current}`}
+              type="button"
               variant="gold"
               size="lg"
               className="flex-[2]"
+              onClick={onSubmit}
               disabled={isSubmitting}
             >
               {isSubmitting ? t('sending') : t('submit')}
@@ -111,6 +122,7 @@ export function FormWizard({
             </Button>
           ) : (
             <Button
+              key={`next-${current}`}
               type="button"
               size="lg"
               className="flex-[2]"

@@ -4,10 +4,11 @@ import { Building2, CalendarDays, CircleAlert, Handshake, Sparkles, Target } fro
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { Controller, useForm, useWatch, type FieldPath } from 'react-hook-form';
+import { Controller, useForm, useWatch, type DefaultValues, type FieldPath } from 'react-hook-form';
 import { QuestionBlock, ScoreField, TextAreaField } from '@/components/form-fields';
 import { OptionCheckboxGroup, OptionRadioGroup } from '@/components/form-option-groups';
 import { FormWizard } from '@/components/form-wizard';
+import { HoneypotField } from '@/components/honeypot-field';
 import { useRouter } from '@/i18n/navigation';
 import {
   B2B_OUTCOME_KEYS,
@@ -23,8 +24,16 @@ import {
   type ProblemKey,
   type WantKey,
 } from '@/lib/feedback-options';
+import {
+  VISITED_DRAFT_KEY,
+  clearFeedbackDraft,
+  loadFeedbackDraft,
+  mergeDraftValues,
+} from '@/lib/feedback-draft';
 import { visitedPayloadSchema, type VisitedFormValues } from '@/lib/feedback-schema';
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
+import { validateWizardStep } from '@/lib/step-validation';
+import { ClientDraftGate, usePersistFeedbackDraft } from '@/lib/use-feedback-draft';
 
 const VISITED_STEP_FIELDS: FieldPath<VisitedFormValues>[][] = [
   ['answers.problems', 'answers.problemsOrgDetail'],
@@ -41,31 +50,52 @@ const VISITED_STEP_FIELDS: FieldPath<VisitedFormValues>[][] = [
 ];
 
 export function VisitedForm() {
+  return (
+    <ClientDraftGate>
+      <VisitedFormClient />
+    </ClientDraftGate>
+  );
+}
+
+function VisitedFormClient() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  const appLocale: 'hy' | 'ru' = locale === 'ru' ? 'ru' : 'hy';
+  const defaults: DefaultValues<VisitedFormValues> = {
+    audience: 'VISITED',
+    locale: appLocale,
+    website: '',
+    answers: {
+      problems: [],
+      problemsOrgDetail: '',
+      visitGoals: [],
+      visitGoalsOther: '',
+      propertyDetail: '',
+      b2bDetail: '',
+      expectationsImprove: '',
+      vol2Factor: '',
+      vol2Wants: [],
+      vol2WantsOther: '',
+    },
+  };
+  const draft = loadFeedbackDraft<VisitedFormValues>(VISITED_DRAFT_KEY, VISITED_STEP_FIELDS.length);
+  const [step, setStep] = useState(draft?.step ?? 0);
   const [submitError, setSubmitError] = useState(false);
+  const [lastStepInvalid, setLastStepInvalid] = useState(false);
 
   const form = useForm<VisitedFormValues>({
     resolver: zodResolver(visitedPayloadSchema),
-    defaultValues: {
-      audience: 'VISITED',
-      locale: locale === 'ru' ? 'ru' : 'hy',
-      website: '',
-      answers: {
-        problems: [],
-        problemsOrgDetail: '',
-        visitGoals: [],
-        visitGoalsOther: '',
-        propertyDetail: '',
-        b2bDetail: '',
-        expectationsImprove: '',
-        vol2Factor: '',
-        vol2Wants: [],
-        vol2WantsOther: '',
-      },
-    },
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
+    defaultValues: mergeDraftValues(defaults, draft?.values, appLocale),
+  });
+
+  usePersistFeedbackDraft({
+    key: VISITED_DRAFT_KEY,
+    step,
+    locale: appLocale,
+    form,
   });
 
   const problems = useWatch({ control: form.control, name: 'answers.problems' }) ?? [];
@@ -83,7 +113,7 @@ export function VisitedForm() {
     const current = form.getValues('answers.problems') ?? [];
     if (value === 'no_problems') {
       form.setValue('answers.problems', current.includes(value) ? [] : ['no_problems'], {
-        shouldValidate: true,
+        shouldValidate: Boolean(form.formState.errors.answers?.problems),
       });
       return;
     }
@@ -91,7 +121,9 @@ export function VisitedForm() {
     const next = withoutNone.includes(value)
       ? withoutNone.filter((item) => item !== value)
       : [...withoutNone, value];
-    form.setValue('answers.problems', next, { shouldValidate: true });
+    form.setValue('answers.problems', next, {
+      shouldValidate: Boolean(form.formState.errors.answers?.problems),
+    });
   }
 
   function toggleGoal(value: GoalKey) {
@@ -99,7 +131,9 @@ export function VisitedForm() {
     const next = current.includes(value)
       ? current.filter((item) => item !== value)
       : [...current, value];
-    form.setValue('answers.visitGoals', next, { shouldValidate: true });
+    form.setValue('answers.visitGoals', next, {
+      shouldValidate: Boolean(form.formState.errors.answers?.visitGoals),
+    });
   }
 
   function toggleWant(value: WantKey) {
@@ -107,19 +141,31 @@ export function VisitedForm() {
     const next = current.includes(value)
       ? current.filter((item) => item !== value)
       : [...current, value];
-    form.setValue('answers.vol2Wants', next, { shouldValidate: true });
+    form.setValue('answers.vol2Wants', next, { shouldValidate: false });
+    if (lastStepInvalid && next.length > 0) {
+      form.clearErrors('answers.vol2Wants');
+    }
   }
 
-  async function goNext() {
-    const valid = await form.trigger(VISITED_STEP_FIELDS[step], { shouldFocus: true });
+  function goNext() {
+    const valid = validateWizardStep(
+      visitedPayloadSchema,
+      form.getValues(),
+      VISITED_STEP_FIELDS[step],
+      form,
+    );
     if (!valid) {
+      scrollToFirstInvalidField();
       return;
     }
+    setLastStepInvalid(false);
     setStep((current) => current + 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function goBack() {
+    form.clearErrors();
+    setLastStepInvalid(false);
     setStep((current) => Math.max(0, current - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -135,21 +181,39 @@ export function VisitedForm() {
       setSubmitError(true);
       return;
     }
+    clearFeedbackDraft(VISITED_DRAFT_KEY);
     router.push('/thanks');
+  }
+
+  async function submitLastStep() {
+    setSubmitError(false);
+    const valid = validateWizardStep(
+      visitedPayloadSchema,
+      form.getValues(),
+      VISITED_STEP_FIELDS[step],
+      form,
+    );
+    if (!valid) {
+      setLastStepInvalid(true);
+      scrollToFirstInvalidField();
+      return;
+    }
+    setLastStepInvalid(false);
+    await form.handleSubmit(onSubmit, scrollToFirstInvalidField)();
   }
 
   const lastIndex = VISITED_STEP_FIELDS.length - 1;
 
   return (
     <form
-      className="rounded-3xl border border-border bg-card p-5 shadow-[0_8px_32px_rgba(0,48,61,0.08)] sm:p-8"
+      className="relative rounded-3xl border border-border bg-card p-5 shadow-[0_8px_32px_rgba(0,48,61,0.08)] sm:p-8"
       onSubmit={(event) => {
         event.preventDefault();
         if (step < lastIndex) {
           void goNext();
           return;
         }
-        void form.handleSubmit(onSubmit, scrollToFirstInvalidField)(event);
+        void submitLastStep();
       }}
       noValidate
     >
@@ -158,9 +222,11 @@ export function VisitedForm() {
         total={VISITED_STEP_FIELDS.length}
         isSubmitting={form.formState.isSubmitting}
         isLast={step === lastIndex}
+        stepError={lastStepInvalid ? t('errors.incomplete') : undefined}
         onBack={goBack}
-        onNext={() => {
-          void goNext();
+        onNext={goNext}
+        onSubmit={() => {
+          void submitLastStep();
         }}
       >
         {step === 0 ? (
@@ -186,12 +252,7 @@ export function VisitedForm() {
                 error={form.formState.errors.answers?.problemsOrgDetail}
               />
             ) : null}
-            <input
-              className="hidden"
-              tabIndex={-1}
-              autoComplete="off"
-              {...form.register('website')}
-            />
+            <HoneypotField registration={form.register('website')} />
           </>
         ) : null}
 
@@ -235,6 +296,7 @@ export function VisitedForm() {
                         value={field.value ?? ''}
                         onChange={field.onChange}
                         error={Boolean(fieldState.error)}
+                        groupRef={field.ref}
                         getLabel={(key) => t(`visited.propertyOutcome.${key}`)}
                       />
                     </QuestionBlock>
@@ -266,6 +328,7 @@ export function VisitedForm() {
                         value={field.value ?? ''}
                         onChange={field.onChange}
                         error={Boolean(fieldState.error)}
+                        groupRef={field.ref}
                         getLabel={(key) => t(`visited.b2bOutcome.${key}`)}
                       />
                     </QuestionBlock>
@@ -338,8 +401,14 @@ export function VisitedForm() {
                     name="vol2Plan"
                     options={VOL2_PLAN_KEYS}
                     value={field.value ?? ''}
-                    onChange={field.onChange}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      if (lastStepInvalid) {
+                        form.clearErrors('answers.vol2Plan');
+                      }
+                    }}
                     error={Boolean(fieldState.error)}
+                    groupRef={field.ref}
                     getLabel={(key) => t(`visited.vol2Plan.${key}`)}
                   />
                 </QuestionBlock>

@@ -43,6 +43,7 @@ export function TextAreaField({
           'min-h-28 resize-y',
           error ? 'border-destructive' : 'border-input',
         )}
+        maxLength={500}
         {...registration}
       />
       <FieldErrorText error={error} />

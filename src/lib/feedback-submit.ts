@@ -3,8 +3,7 @@ import { Prisma } from '@/generated/prisma';
 import { applySessionLimits, prisma } from '@/lib/db';
 import type { FeedbackPayload } from '@/lib/feedback-schema';
 import { logger } from '@/lib/logger';
-import { clipText } from '@/lib/normalize';
-import { appendSheetRow, toSheetRow } from '@/lib/sheets';
+import { appendSheetRow, sheetsSyncErrorCode, toSheetRow } from '@/lib/sheets';
 
 function sanitizeAnswers(payload: FeedbackPayload): Prisma.InputJsonValue {
   return JSON.parse(JSON.stringify(payload.answers)) as Prisma.InputJsonValue;
@@ -22,7 +21,7 @@ async function syncSheet(id: string, createdAt: Date, payload: FeedbackPayload):
       },
     });
   } catch (error) {
-    const code = error instanceof Error ? error.message.slice(0, 80) : 'SHEETS_UNKNOWN';
+    const code = sheetsSyncErrorCode(error);
     logger.warn({ id, code }, 'sheets.sync_deferred');
     await prisma.feedbackSubmission.update({
       where: { id },
@@ -54,5 +53,5 @@ export async function saveFeedback(payload: FeedbackPayload): Promise<{ id: stri
 }
 
 export function isHoneypotFilled(website: string | undefined): boolean {
-  return clipText(website ?? '').length > 0;
+  return (website ?? '').trim().length > 0;
 }

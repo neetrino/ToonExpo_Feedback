@@ -14,7 +14,7 @@ import {
   showsB2bQuestion,
   showsPropertyQuestion,
 } from '@/lib/feedback-options';
-import { clipText } from '@/lib/normalize';
+import { clipText, sanitizeFreeText } from '@/lib/normalize';
 
 const localeSchema = z.enum(['hy', 'ru']);
 
@@ -22,23 +22,33 @@ const honeypotFields = {
   website: z.string().max(120).optional().default(''),
 };
 
+const freeText = z.string().max(500).optional().default('').transform(sanitizeFreeText);
+
+function uniqueKeyArray<T extends readonly [string, ...string[]]>(keys: T) {
+  return z
+    .array(z.enum(keys))
+    .min(1)
+    .max(keys.length)
+    .refine((items) => new Set(items).size === items.length, { message: 'duplicate' });
+}
+
 export const visitedAnswersSchema = z
   .object({
-    problems: z.array(z.enum(PROBLEM_KEYS)).min(1),
-    problemsOrgDetail: z.string().max(500).optional().default(''),
-    visitGoals: z.array(z.enum(GOAL_KEYS)).min(1),
-    visitGoalsOther: z.string().max(500).optional().default(''),
+    problems: uniqueKeyArray(PROBLEM_KEYS),
+    problemsOrgDetail: freeText,
+    visitGoals: uniqueKeyArray(GOAL_KEYS),
+    visitGoalsOther: freeText,
     propertyOutcome: z.enum(PROPERTY_OUTCOME_KEYS).optional(),
-    propertyDetail: z.string().max(500).optional().default(''),
+    propertyDetail: freeText,
     b2bOutcome: z.enum(B2B_OUTCOME_KEYS).optional(),
-    b2bDetail: z.string().max(500).optional().default(''),
+    b2bDetail: freeText,
     expectationsScore: z.number().int().min(1).max(10),
-    expectationsImprove: z.string().max(500).optional().default(''),
+    expectationsImprove: freeText,
     recommendScore: z.number().int().min(1).max(10),
     vol2Plan: z.enum(VOL2_PLAN_KEYS),
-    vol2Factor: z.string().max(500).optional().default(''),
-    vol2Wants: z.array(z.enum(WANT_KEYS)).min(1),
-    vol2WantsOther: z.string().max(500).optional().default(''),
+    vol2Factor: freeText,
+    vol2Wants: uniqueKeyArray(WANT_KEYS),
+    vol2WantsOther: freeText,
   })
   .superRefine((value, ctx) => {
     if (value.problems.includes('no_problems') && value.problems.length > 1) {
@@ -132,14 +142,14 @@ export const visitedAnswersSchema = z
 export const missedAnswersSchema = z
   .object({
     noVisitReason: z.enum(NO_VISIT_REASON_KEYS),
-    noVisitOther: z.string().max(500).optional().default(''),
-    wouldIncrease: z.array(z.enum(WOULD_INCREASE_KEYS)).min(1),
-    wouldIncreaseOther: z.string().max(500).optional().default(''),
+    noVisitOther: freeText,
+    wouldIncrease: uniqueKeyArray(WOULD_INCREASE_KEYS),
+    wouldIncreaseOther: freeText,
     propertyRelevance: z.enum(PROPERTY_RELEVANCE_KEYS),
     vol2Plan: z.enum(VOL2_PLAN_KEYS),
-    vol2Factor: z.string().max(500).optional().default(''),
-    vol2Motivation: z.array(z.enum(MOTIVATION_KEYS)).min(1),
-    vol2MotivationOther: z.string().max(500).optional().default(''),
+    vol2Factor: freeText,
+    vol2Motivation: uniqueKeyArray(MOTIVATION_KEYS),
+    vol2MotivationOther: freeText,
   })
   .superRefine((value, ctx) => {
     if (value.noVisitReason === 'other' && clipText(value.noVisitOther).length === 0) {

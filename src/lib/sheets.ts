@@ -1,7 +1,7 @@
 import type { FeedbackPayload, MissedAnswers, VisitedAnswers } from '@/lib/feedback-schema';
 import { getSheetsWebhookSecret, getSheetsWebhookUrl } from '@/lib/env';
 import { logger } from '@/lib/logger';
-import { clipText } from '@/lib/normalize';
+import { sanitizeFreeText } from '@/lib/normalize';
 import {
   MISSED_SHEET_HEADERS,
   SHEET_TAB_NAMES,
@@ -34,20 +34,20 @@ function visitedRow(id: string, submittedAt: string, payload: FeedbackPayload): 
     id,
     sheetLocaleLabel(payload.locale),
     sheetProblemLabels(answers.problems),
-    clipText(answers.problemsOrgDetail),
+    sanitizeFreeText(answers.problemsOrgDetail),
     sheetGoalLabels(answers.visitGoals),
-    clipText(answers.visitGoalsOther),
+    sanitizeFreeText(answers.visitGoalsOther),
     answers.propertyOutcome ? sheetPropertyOutcomeLabel(answers.propertyOutcome) : '',
-    clipText(answers.propertyDetail),
+    sanitizeFreeText(answers.propertyDetail),
     answers.b2bOutcome ? sheetB2bOutcomeLabel(answers.b2bOutcome) : '',
-    clipText(answers.b2bDetail),
+    sanitizeFreeText(answers.b2bDetail),
     String(answers.expectationsScore),
-    clipText(answers.expectationsImprove),
+    sanitizeFreeText(answers.expectationsImprove),
     String(answers.recommendScore),
     sheetVisitedVol2PlanLabel(answers.vol2Plan),
-    clipText(answers.vol2Factor),
+    sanitizeFreeText(answers.vol2Factor),
     sheetWantLabels(answers.vol2Wants),
-    clipText(answers.vol2WantsOther),
+    sanitizeFreeText(answers.vol2WantsOther),
   ];
 }
 
@@ -58,14 +58,14 @@ function missedRow(id: string, submittedAt: string, payload: FeedbackPayload): s
     id,
     sheetLocaleLabel(payload.locale),
     sheetNoVisitReasonLabel(answers.noVisitReason),
-    clipText(answers.noVisitOther),
+    sanitizeFreeText(answers.noVisitOther),
     sheetWouldIncreaseLabels(answers.wouldIncrease),
-    clipText(answers.wouldIncreaseOther),
+    sanitizeFreeText(answers.wouldIncreaseOther),
     sheetPropertyRelevanceLabel(answers.propertyRelevance),
     sheetMissedVol2PlanLabel(answers.vol2Plan),
-    clipText(answers.vol2Factor),
+    sanitizeFreeText(answers.vol2Factor),
     sheetMotivationLabels(answers.vol2Motivation),
-    clipText(answers.vol2MotivationOther),
+    sanitizeFreeText(answers.vol2MotivationOther),
   ];
 }
 
@@ -87,11 +87,37 @@ export function toSheetRow(id: string, submittedAt: Date, payload: FeedbackPaylo
   };
 }
 
+export function isAllowedSheetsWebhookUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:') {
+      return false;
+    }
+    if (parsed.username || parsed.password) {
+      return false;
+    }
+    const host = parsed.hostname.toLowerCase();
+    return host === 'script.google.com' || host.endsWith('.script.google.com');
+  } catch {
+    return false;
+  }
+}
+
+export function sheetsSyncErrorCode(error: unknown): string {
+  if (error instanceof Error && /^SHEETS_[A-Za-z0-9_]{1,64}$/.test(error.message)) {
+    return error.message;
+  }
+  return 'SHEETS_UNKNOWN';
+}
+
 export async function appendSheetRow(row: SheetRow): Promise<void> {
   const url = getSheetsWebhookUrl();
   const secret = getSheetsWebhookSecret();
   if (!url || !secret) {
     throw new Error('SHEETS_WEBHOOK_NOT_CONFIGURED');
+  }
+  if (!isAllowedSheetsWebhookUrl(url)) {
+    throw new Error('SHEETS_WEBHOOK_URL_INVALID');
   }
 
   const response = await fetch(url, {
@@ -132,10 +158,11 @@ export function assertSheetsWebhookOk(body: unknown, status: number): void {
     return;
   }
 
-  const code =
+  const rawCode =
     body && typeof body === 'object' && 'error' in body && typeof body.error === 'string'
       ? body.error
       : 'invalid_response';
+  const code = /^[A-Za-z0-9_]{1,32}$/.test(rawCode) ? rawCode : 'invalid_response';
   logger.warn({ status, code }, 'sheets.webhook_failed');
   throw new Error(`SHEETS_WEBHOOK_${code}`);
 }

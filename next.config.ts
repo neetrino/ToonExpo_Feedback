@@ -41,6 +41,9 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
           },
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
+          { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
           { key: 'Content-Security-Policy', value: CONTENT_SECURITY_POLICY },
           { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
           ...(isDev

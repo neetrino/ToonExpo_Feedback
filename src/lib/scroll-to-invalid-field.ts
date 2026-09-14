@@ -1,10 +1,19 @@
 /**
- * Controller radios/checkboxes are not registered inputs, so RHF cannot focus them.
- * Scroll the first invalid group into view after a failed last-step submit.
+ * Controller radios/checkboxes are not native RHF inputs, so focus can miss.
+ * Wait for React to paint the error, then scroll it into view.
  */
 export function scrollToFirstInvalidField(): void {
-  requestAnimationFrame(() => {
+  const scroll = () => {
     const target = document.querySelector<HTMLElement>('[aria-invalid="true"], [role="alert"]');
-    target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (!target) {
+      return;
+    }
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(scroll);
   });
+  window.setTimeout(scroll, 50);
 }

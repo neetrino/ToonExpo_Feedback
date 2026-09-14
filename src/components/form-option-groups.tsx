@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -8,6 +9,7 @@ type OptionRadioGroupProps<T extends string> = {
   getLabel: (value: T) => string;
   onChange: (value: T) => void;
   error?: boolean;
+  groupRef?: Ref<HTMLDivElement>;
 };
 
 export function OptionRadioGroup<T extends string>({
@@ -17,9 +19,16 @@ export function OptionRadioGroup<T extends string>({
   getLabel,
   onChange,
   error = false,
+  groupRef,
 }: OptionRadioGroupProps<T>) {
   return (
-    <div className="space-y-2" role="radiogroup" aria-invalid={error || undefined}>
+    <div
+      ref={groupRef}
+      className="space-y-2"
+      role="radiogroup"
+      tabIndex={-1}
+      aria-invalid={error || undefined}
+    >
       {options.map((option) => {
         const id = `${name}-${option}`;
         const checked = value === option;
@@ -81,7 +90,7 @@ export function OptionCheckboxGroup<T extends string>({
   error = false,
 }: OptionCheckboxGroupProps<T>) {
   return (
-    <div className="space-y-2" aria-invalid={error || undefined}>
+    <div className="space-y-2" tabIndex={-1} aria-invalid={error || undefined}>
       {options.map((option) => {
         const id = `${name}-${option}`;
         const checked = values.includes(option);
