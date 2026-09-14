@@ -1,4 +1,4 @@
-import { CalendarDays, Home, Inbox, Sparkles } from 'lucide-react';
+import { CalendarDays, ChevronDown, Home, Inbox, Sparkles } from 'lucide-react';
 import { IconBubble } from '@/components/icon-bubble';
 import { PageShell } from '@/components/page-shell';
 import { SuccessCheck } from '@/components/success-check';
@@ -51,17 +51,26 @@ export default async function ThanksPage({ params }: ThanksPageProps) {
               </li>
             </ul>
             <div className="mt-8 flex w-full flex-col gap-3 sm:items-center">
-              <div className="flex w-full flex-col items-center gap-2.5">
-                <p className="font-display text-sm font-semibold uppercase tracking-[0.22em] text-secondary">
-                  {t('registerLabel')}
-                </p>
+              <div className="w-full rounded-[1.75rem] border border-highlight/50 bg-highlight/15 px-4 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">
+                <div className="flex flex-col items-center gap-1.5">
+                  <p className="font-display text-xl font-extrabold tracking-tight text-primary">
+                    {t('registerLabel')}
+                  </p>
+                  <p className="max-w-[16rem] text-sm leading-snug text-secondary">
+                    {t('registerHint')}
+                  </p>
+                  <ChevronDown
+                    className="mt-1 size-5 text-secondary motion-safe:animate-bounce"
+                    aria-hidden="true"
+                  />
+                </div>
                 <a
                   href={VOL2_REGISTRATION_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(
                     buttonVariants({ variant: 'gold', size: 'lg' }),
-                    'w-full whitespace-normal text-center leading-snug sm:w-auto sm:px-6',
+                    'mt-1 w-full whitespace-normal text-center leading-snug shadow-[0_8px_20px_rgba(0,48,61,0.12)]',
                   )}
                 >
                   <CalendarDays className="size-4 shrink-0" aria-hidden="true" />
