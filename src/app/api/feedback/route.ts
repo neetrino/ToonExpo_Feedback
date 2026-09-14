@@ -3,9 +3,14 @@ import { ZodError } from 'zod';
 import { feedbackPayloadSchema } from '@/lib/feedback-schema';
 import { isHoneypotFilled, saveFeedback } from '@/lib/feedback-submit';
 import { logger } from '@/lib/logger';
-import { isAllowedFeedbackOrigin } from '@/lib/request-origin';
+import { readJsonObject } from '@/lib/read-json-body';
+import { isAllowedFeedbackOrigin, isCrossSiteRequest } from '@/lib/request-origin';
 
 export async function POST(request: Request): Promise<NextResponse> {
+  if (isCrossSiteRequest(request.headers.get('sec-fetch-site'))) {
+    return NextResponse.json({ error: 'invalid_origin' }, { status: 403 });
+  }
+
   if (
     !isAllowedFeedbackOrigin({
       origin: request.headers.get('origin'),
@@ -16,21 +21,20 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'invalid_origin' }, { status: 403 });
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
+  const parsedBody = await readJsonObject(request);
+  if (!parsedBody.ok) {
+    const status = parsedBody.error === 'payload_too_large' ? 413 : 400;
+    return NextResponse.json({ error: parsedBody.error }, { status });
   }
 
   try {
-    const payload = feedbackPayloadSchema.parse(body);
+    const payload = feedbackPayloadSchema.parse(parsedBody.body);
     if (isHoneypotFilled(payload.website)) {
       return new NextResponse(null, { status: 204 });
     }
 
-    const saved = await saveFeedback(payload);
-    return NextResponse.json({ ok: true, id: saved.id }, { status: 201 });
+    await saveFeedback(payload);
+    return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json({ error: 'invalid_input' }, { status: 400 });

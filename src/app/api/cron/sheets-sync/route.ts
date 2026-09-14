@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { Prisma } from '@/generated/prisma';
+import { isAuthorizedCronRequest } from '@/lib/cron-auth';
 import { applySessionLimits, prisma } from '@/lib/db';
 import { getCronSecret, isSheetsCronEnabled } from '@/lib/env';
 import { feedbackPayloadSchema } from '@/lib/feedback-schema';
 import { logger } from '@/lib/logger';
-import { appendSheetRow, toSheetRow } from '@/lib/sheets';
+import { appendSheetRow, sheetsSyncErrorCode, toSheetRow } from '@/lib/sheets';
 
 const BATCH_SIZE = 25;
 
@@ -22,14 +23,12 @@ function toPayload(row: {
 }
 
 export async function GET(request: Request): Promise<NextResponse> {
-  if (!isSheetsCronEnabled()) {
-    return NextResponse.json({ status: 'DISABLED' });
+  if (!isAuthorizedCronRequest(request.headers.get('authorization'), getCronSecret())) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
-  const secret = getCronSecret();
-  const header = request.headers.get('authorization');
-  if (!secret || header !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  if (!isSheetsCronEnabled()) {
+    return NextResponse.json({ status: 'DISABLED' });
   }
 
   await applySessionLimits();
@@ -58,7 +57,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       synced += 1;
     } catch (error) {
       failed += 1;
-      const code = error instanceof Error ? error.message.slice(0, 80) : 'SHEETS_UNKNOWN';
+      const code = sheetsSyncErrorCode(error);
       logger.warn({ id: row.id, code }, 'sheets.cron_failed');
       await prisma.feedbackSubmission.update({
         where: { id: row.id },

@@ -35,6 +35,9 @@ function doPost(event) {
     if ((audience !== 'VISITED' && audience !== 'MISSED') || !Array.isArray(values)) {
       return jsonResponse({ error: 'invalid' });
     }
+    if (values.length > 40) {
+      return jsonResponse({ error: 'invalid' });
+    }
 
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = resolveSheet(spreadsheet, audience, payload.tab);
@@ -43,7 +46,7 @@ function doPost(event) {
     }
 
     ensureHeaders(sheet, payload.headers);
-    sheet.appendRow(values);
+    sheet.appendRow(values.map(sanitizeCell));
     return jsonResponse({ ok: true });
   } catch (error) {
     return jsonResponse({ error: 'failed' });
@@ -84,6 +87,14 @@ function ensureHeaders(sheet, headers) {
   }
 
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+}
+
+function sanitizeCell(value) {
+  const text = String(value == null ? '' : value).slice(0, 500);
+  if (/^[=+\-@\t\r]/.test(text)) {
+    return "'" + text;
+  }
+  return text;
 }
 
 function jsonResponse(body) {

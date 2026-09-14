@@ -8,6 +8,7 @@ import { Controller, useForm, useWatch, type FieldPath } from 'react-hook-form';
 import { QuestionBlock, TextAreaField } from '@/components/form-fields';
 import { OptionCheckboxGroup, OptionRadioGroup } from '@/components/form-option-groups';
 import { FormWizard } from '@/components/form-wizard';
+import { HoneypotField } from '@/components/honeypot-field';
 import { useRouter } from '@/i18n/navigation';
 import {
   MOTIVATION_KEYS,
@@ -110,7 +111,7 @@ export function MissedForm() {
 
   return (
     <form
-      className="rounded-3xl border border-border bg-card p-5 shadow-[0_8px_32px_rgba(0,48,61,0.08)] sm:p-8"
+      className="relative rounded-3xl border border-border bg-card p-5 shadow-[0_8px_32px_rgba(0,48,61,0.08)] sm:p-8"
       onSubmit={(event) => {
         event.preventDefault();
         if (step < lastIndex) {
@@ -160,12 +161,7 @@ export function MissedForm() {
                 error={form.formState.errors.answers?.noVisitOther}
               />
             ) : null}
-            <input
-              className="hidden"
-              tabIndex={-1}
-              autoComplete="off"
-              {...form.register('website')}
-            />
+            <HoneypotField registration={form.register('website')} />
           </>
         ) : null}
 

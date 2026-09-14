@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { feedbackPayloadSchema } from '@/lib/feedback-schema';
 import { MISSED_SHEET_HEADERS, SHEET_TAB_NAMES, VISITED_SHEET_HEADERS } from '@/lib/sheet-labels';
-import { assertSheetsWebhookOk, toSheetRow } from '@/lib/sheets';
+import { assertSheetsWebhookOk, isAllowedSheetsWebhookUrl, toSheetRow } from '@/lib/sheets';
 
 const submittedAt = new Date('2026-09-10T12:00:00.000Z');
 
@@ -104,5 +104,25 @@ describe('assertSheetsWebhookOk', () => {
 
   it('rejects a non-2xx status even if the body says ok', () => {
     expect(() => assertSheetsWebhookOk({ ok: true }, 500)).toThrow('SHEETS_WEBHOOK_500');
+  });
+
+  it('ignores unsafe error strings from the webhook', () => {
+    expect(() => assertSheetsWebhookOk({ error: 'unauthorized<script>' }, 200)).toThrow(
+      'SHEETS_WEBHOOK_invalid_response',
+    );
+  });
+});
+
+describe('isAllowedSheetsWebhookUrl', () => {
+  it('accepts a Google Apps Script https URL', () => {
+    expect(isAllowedSheetsWebhookUrl('https://script.google.com/macros/s/abc/exec')).toBe(true);
+  });
+
+  it('rejects http, credentials, and non-Google hosts', () => {
+    expect(isAllowedSheetsWebhookUrl('http://script.google.com/macros/s/abc/exec')).toBe(false);
+    expect(isAllowedSheetsWebhookUrl('https://user:pass@script.google.com/macros/s/abc/exec')).toBe(
+      false,
+    );
+    expect(isAllowedSheetsWebhookUrl('https://evil.example/exec')).toBe(false);
   });
 });
