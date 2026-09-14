@@ -139,7 +139,7 @@ function MissedFormClient() {
       setSubmitError(true);
       return;
     }
-    clearDraft();
+    clearFeedbackDraft(MISSED_DRAFT_KEY);
     router.push('/thanks');
   }
 
@@ -156,15 +156,6 @@ function MissedFormClient() {
   }
 
   const lastIndex = MISSED_STEP_FIELDS.length - 1;
-
-  if (!bootstrapped) {
-    return (
-      <div
-        className="min-h-80 rounded-3xl border border-border bg-card p-5 sm:p-8"
-        aria-busy="true"
-      />
-    );
-  }
 
   return (
     <form
