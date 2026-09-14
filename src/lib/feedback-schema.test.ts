@@ -128,6 +128,14 @@ describe('visitedPayloadSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('requires a vol2 plan on the last visited step', () => {
+    const result = visitedPayloadSchema.safeParse({
+      ...visitedBase,
+      answers: { ...visitedBase.answers, vol2Plan: undefined },
+    });
+    expect(result.success).toBe(false);
+  });
+
   it('ignores leftover property and b2b answers after those goals are unchecked', () => {
     const parsed = visitedPayloadSchema.parse({
       ...visitedBase,

@@ -47,6 +47,7 @@ export function VisitedForm() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [submitError, setSubmitError] = useState(false);
+  const [lastStepInvalid, setLastStepInvalid] = useState(false);
 
   const form = useForm<VisitedFormValues>({
     resolver: zodResolver(visitedPayloadSchema),
@@ -114,6 +115,7 @@ export function VisitedForm() {
   async function goNext() {
     const valid = await form.trigger(VISITED_STEP_FIELDS[step], { shouldFocus: true });
     if (!valid) {
+      scrollToFirstInvalidField();
       return;
     }
     setStep((current) => current + 1);
@@ -139,6 +141,18 @@ export function VisitedForm() {
     router.push('/thanks');
   }
 
+  async function submitLastStep() {
+    setSubmitError(false);
+    setLastStepInvalid(false);
+    const valid = await form.trigger(VISITED_STEP_FIELDS[step], { shouldFocus: true });
+    if (!valid) {
+      setLastStepInvalid(true);
+      scrollToFirstInvalidField();
+      return;
+    }
+    await form.handleSubmit(onSubmit, scrollToFirstInvalidField)();
+  }
+
   const lastIndex = VISITED_STEP_FIELDS.length - 1;
 
   return (
@@ -150,7 +164,7 @@ export function VisitedForm() {
           void goNext();
           return;
         }
-        void form.handleSubmit(onSubmit, scrollToFirstInvalidField)(event);
+        void submitLastStep();
       }}
       noValidate
     >
@@ -159,6 +173,7 @@ export function VisitedForm() {
         total={VISITED_STEP_FIELDS.length}
         isSubmitting={form.formState.isSubmitting}
         isLast={step === lastIndex}
+        stepError={lastStepInvalid ? t('errors.incomplete') : undefined}
         onBack={goBack}
         onNext={() => {
           void goNext();
@@ -231,6 +246,7 @@ export function VisitedForm() {
                         value={field.value ?? ''}
                         onChange={field.onChange}
                         error={Boolean(fieldState.error)}
+                        groupRef={field.ref}
                         getLabel={(key) => t(`visited.propertyOutcome.${key}`)}
                       />
                     </QuestionBlock>
@@ -262,6 +278,7 @@ export function VisitedForm() {
                         value={field.value ?? ''}
                         onChange={field.onChange}
                         error={Boolean(fieldState.error)}
+                        groupRef={field.ref}
                         getLabel={(key) => t(`visited.b2bOutcome.${key}`)}
                       />
                     </QuestionBlock>
@@ -336,6 +353,7 @@ export function VisitedForm() {
                     value={field.value ?? ''}
                     onChange={field.onChange}
                     error={Boolean(fieldState.error)}
+                    groupRef={field.ref}
                     getLabel={(key) => t(`visited.vol2Plan.${key}`)}
                   />
                 </QuestionBlock>

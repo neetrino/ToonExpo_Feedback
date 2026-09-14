@@ -40,6 +40,7 @@ export function MissedForm() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [submitError, setSubmitError] = useState(false);
+  const [lastStepInvalid, setLastStepInvalid] = useState(false);
 
   const form = useForm<MissedFormValues>({
     resolver: zodResolver(missedPayloadSchema),
@@ -82,6 +83,7 @@ export function MissedForm() {
   async function goNext() {
     const valid = await form.trigger(MISSED_STEP_FIELDS[step], { shouldFocus: true });
     if (!valid) {
+      scrollToFirstInvalidField();
       return;
     }
     setStep((current) => current + 1);
@@ -107,6 +109,18 @@ export function MissedForm() {
     router.push('/thanks');
   }
 
+  async function submitLastStep() {
+    setSubmitError(false);
+    setLastStepInvalid(false);
+    const valid = await form.trigger(MISSED_STEP_FIELDS[step], { shouldFocus: true });
+    if (!valid) {
+      setLastStepInvalid(true);
+      scrollToFirstInvalidField();
+      return;
+    }
+    await form.handleSubmit(onSubmit, scrollToFirstInvalidField)();
+  }
+
   const lastIndex = MISSED_STEP_FIELDS.length - 1;
 
   return (
@@ -118,7 +132,7 @@ export function MissedForm() {
           void goNext();
           return;
         }
-        void form.handleSubmit(onSubmit, scrollToFirstInvalidField)(event);
+        void submitLastStep();
       }}
       noValidate
     >
@@ -127,6 +141,7 @@ export function MissedForm() {
         total={MISSED_STEP_FIELDS.length}
         isSubmitting={form.formState.isSubmitting}
         isLast={step === lastIndex}
+        stepError={lastStepInvalid ? t('errors.incomplete') : undefined}
         onBack={goBack}
         onNext={() => {
           void goNext();
@@ -149,6 +164,7 @@ export function MissedForm() {
                     value={field.value ?? ''}
                     onChange={field.onChange}
                     error={Boolean(fieldState.error)}
+                    groupRef={field.ref}
                     getLabel={(key) => t(`missed.reasons.${key}`)}
                   />
                 </QuestionBlock>
@@ -203,6 +219,7 @@ export function MissedForm() {
                     value={field.value ?? ''}
                     onChange={field.onChange}
                     error={Boolean(fieldState.error)}
+                    groupRef={field.ref}
                     getLabel={(key) => t(`missed.relevance.${key}`)}
                   />
                 </QuestionBlock>
@@ -228,6 +245,7 @@ export function MissedForm() {
                     value={field.value ?? ''}
                     onChange={field.onChange}
                     error={Boolean(fieldState.error)}
+                    groupRef={field.ref}
                     getLabel={(key) => t(`missed.vol2Plan.${key}`)}
                   />
                 </QuestionBlock>
