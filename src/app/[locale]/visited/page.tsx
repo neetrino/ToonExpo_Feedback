@@ -23,7 +23,7 @@ export default async function VisitedPage({ params }: VisitedPageProps) {
         title={t('visited.title')}
         intro={t('visited.intro')}
         icon={
-          <IconBubble>
+          <IconBubble className="bg-white/10">
             <CalendarCheck className="size-5" />
           </IconBubble>
         }

@@ -17,13 +17,16 @@ export default async function NotFoundPage() {
         title={t('notFound.title')}
         intro={t('notFound.text')}
         icon={
-          <IconBubble tone="secondary">
+          <IconBubble tone="secondary" className="bg-white/10">
             <SearchX className="size-5" />
           </IconBubble>
         }
       />
       <p className="mt-8">
-        <Link href="/" className={cn(buttonVariants({ variant: 'gold', size: 'lg' }))}>
+        <Link
+          href="/"
+          className={cn(buttonVariants({ variant: 'gold', size: 'lg' }), 'ring-offset-primary')}
+        >
           <Home className="size-4" aria-hidden="true" />
           {t('thanks.home')}
         </Link>

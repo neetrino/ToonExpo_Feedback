@@ -23,14 +23,14 @@ export function PageHero({
           {icon}
         </div>
       ) : null}
-      <p className="text-[11px] font-semibold tracking-[0.14em] text-accent">{kicker}</p>
-      <h1 className="mt-3 font-display text-[1.7rem] font-bold leading-tight tracking-tight sm:text-4xl">
+      <p className="text-[11px] font-semibold tracking-[0.14em] text-highlight">{kicker}</p>
+      <h1 className="mt-3 font-display text-[1.7rem] font-bold leading-tight tracking-tight text-white sm:text-4xl">
         {title}
       </h1>
       {intro ? (
         <p
           className={cn(
-            'mt-3 max-w-2xl text-[15px] leading-relaxed text-muted-foreground sm:text-base',
+            'mt-3 max-w-2xl text-[15px] leading-relaxed text-white/70 sm:text-base',
             centered && 'mx-auto',
           )}
         >
@@ -38,7 +38,7 @@ export function PageHero({
         </p>
       ) : null}
       <div
-        className={cn('mt-5 h-1 w-12 rounded-full bg-accent', centered && 'mx-auto')}
+        className={cn('mt-5 h-1 w-12 rounded-full bg-highlight', centered && 'mx-auto')}
         aria-hidden="true"
       />
     </div>

@@ -18,13 +18,13 @@ export default function LocaleError({ reset }: { error: Error; reset: () => void
         title={t('pageTitle')}
         intro={t('pageText')}
         icon={
-          <IconBubble tone="gold">
+          <IconBubble tone="gold" className="bg-white/10">
             <RotateCcw className="size-5" />
           </IconBubble>
         }
       />
       <div className="mt-8">
-        <Button type="button" size="lg" onClick={reset}>
+        <Button type="button" variant="gold" size="lg" className="ring-offset-primary" onClick={reset}>
           <RotateCcw className="size-4" aria-hidden="true" />
           {t('retry')}
         </Button>

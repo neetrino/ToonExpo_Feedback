@@ -22,25 +22,25 @@ export async function LandingChoice() {
         title={t('title')}
         intro={t('intro')}
         icon={
-          <IconBubble tone="accent" className="size-14 rounded-[1.15rem]">
+          <IconBubble tone="accent" className="size-14 rounded-[1.15rem] bg-white/10">
             <MessageCircleHeart className="size-7" />
           </IconBubble>
         }
       />
       <ul className="mt-6 flex flex-wrap justify-center gap-2">
-        <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-secondary">
-          <Clock className="size-3.5 text-accent" aria-hidden="true" />
+        <li className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/80">
+          <Clock className="size-3.5 text-highlight" aria-hidden="true" />
           {t('minutes')}
         </li>
-        <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-secondary">
-          <Languages className="size-3.5 text-accent" aria-hidden="true" />
+        <li className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/80">
+          <Languages className="size-3.5 text-highlight" aria-hidden="true" />
           {t('bilingual')}
         </li>
       </ul>
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <Link
           href="/visited"
-          className="landing-card-enter group relative flex min-h-[10.5rem] flex-col overflow-hidden rounded-3xl border border-border bg-card p-5 shadow-[0_8px_32px_rgba(0,48,61,0.08)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-accent hover:shadow-[0_12px_36px_rgba(0,48,61,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:p-6"
+          className="landing-card-enter group relative flex min-h-[10.5rem] flex-col overflow-hidden rounded-3xl border border-border bg-card p-5 shadow-[0_16px_40px_rgba(0,0,0,0.22)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-accent hover:shadow-[0_20px_48px_rgba(0,0,0,0.32)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:p-6"
         >
           <span className="absolute inset-x-0 top-0 h-1 bg-accent" aria-hidden="true" />
           <span className="pointer-events-none absolute -right-8 -top-8 size-28 rounded-full bg-accent/10" />
@@ -60,7 +60,7 @@ export async function LandingChoice() {
         </Link>
         <Link
           href="/missed"
-          className="landing-card-enter group relative flex min-h-[10.5rem] flex-col overflow-hidden rounded-3xl border border-border bg-card p-5 shadow-[0_8px_32px_rgba(0,48,61,0.08)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-accent hover:shadow-[0_12px_36px_rgba(0,48,61,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:p-6"
+          className="landing-card-enter group relative flex min-h-[10.5rem] flex-col overflow-hidden rounded-3xl border border-border bg-card p-5 shadow-[0_16px_40px_rgba(0,0,0,0.22)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-accent hover:shadow-[0_20px_48px_rgba(0,0,0,0.32)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:p-6"
         >
           <span className="absolute inset-x-0 top-0 h-1 bg-primary" aria-hidden="true" />
           <span className="pointer-events-none absolute -right-8 -top-8 size-28 rounded-full bg-secondary/10" />
