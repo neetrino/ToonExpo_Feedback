@@ -25,7 +25,7 @@ export default async function ThanksPage({ params }: ThanksPageProps) {
         <div className="success-card-enter w-full max-w-md">
           <div
             role="status"
-            className="relative flex flex-col items-center overflow-hidden rounded-3xl border border-border bg-card px-6 py-10 text-center shadow-[0_8px_32px_rgba(0,48,61,0.08)] sm:px-8 sm:py-12"
+            className="relative flex flex-col items-center overflow-hidden rounded-3xl border border-border bg-card px-6 py-10 text-center shadow-[0_16px_40px_rgba(0,0,0,0.22)] sm:px-8 sm:py-12"
           >
             <span className="absolute inset-x-0 top-0 h-1 bg-highlight" aria-hidden="true" />
             <span className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-success/10" />

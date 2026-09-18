@@ -35,7 +35,7 @@ export function LanguageSwitcher({ tone = 'default' }: LanguageSwitcherProps) {
           locale={code}
           aria-current={code === locale ? 'true' : undefined}
           className={cn(
-            'inline-flex min-h-10 min-w-10 items-center justify-center rounded-full px-3 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-highlight focus-visible:ring-offset-2 motion-reduce:transition-none',
+            'inline-flex min-h-8 min-w-8 items-center justify-center rounded-full px-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-highlight focus-visible:ring-offset-2 motion-reduce:transition-none',
             isInverse && 'focus-visible:ring-offset-primary',
             code === locale
               ? isInverse

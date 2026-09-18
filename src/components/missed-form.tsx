@@ -172,7 +172,7 @@ function MissedFormClient() {
 
   return (
     <form
-      className="relative rounded-3xl border border-border bg-card p-5 shadow-[0_8px_32px_rgba(0,48,61,0.08)] sm:p-8"
+      className="relative rounded-3xl border border-border bg-card p-5 shadow-[0_16px_40px_rgba(0,0,0,0.22)] sm:p-8"
       onSubmit={(event) => {
         event.preventDefault();
         if (step < lastIndex) {

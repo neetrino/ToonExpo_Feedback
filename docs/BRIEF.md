@@ -48,11 +48,11 @@
 
 | Роль | Hex |
 |------|-----|
-| Primary / текст | `#00303d` |
+| Primary / холст / текст | `#00303d` |
 | Secondary | `#246976` |
 | Accent | `#2ba8b0` |
 | Highlight (золото логотипа) | `#ffd700` |
-| Фон muted | `#f4f7f8` |
+| Фон карточек / muted | `#ffffff` / `#f4f7f8` |
 | Border | `#d7e2e5` |
 
 Шрифты-референс Registration: Onest + Noto Sans Armenian / Noto Sans.

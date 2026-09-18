@@ -23,7 +23,7 @@ export default async function MissedPage({ params }: MissedPageProps) {
         title={t('missed.title')}
         intro={t('missed.intro')}
         icon={
-          <IconBubble tone="secondary">
+          <IconBubble tone="secondary" className="bg-white/10">
             <UserRoundX className="size-5" />
           </IconBubble>
         }
