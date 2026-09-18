@@ -3,13 +3,15 @@ import {
   ChevronRight,
   Clock,
   Languages,
-  MessageCircleHeart,
   UserRoundX,
 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { ToonExpoLogo } from '@/components/brand/toon-expo-logo';
 import { IconBubble } from '@/components/icon-bubble';
 import { PageHero } from '@/components/page-hero';
 import { Link } from '@/i18n/navigation';
+
+const LANDING_HERO_LOGO_SIZE = 104;
 
 export async function LandingChoice() {
   const t = await getTranslations('landing');
@@ -22,9 +24,12 @@ export async function LandingChoice() {
         title={t('title')}
         intro={t('intro')}
         icon={
-          <IconBubble tone="accent" className="size-14 rounded-[1.15rem] bg-white/10">
-            <MessageCircleHeart className="size-7" />
-          </IconBubble>
+          <ToonExpoLogo
+            size={LANDING_HERO_LOGO_SIZE}
+            inverted
+            priority
+            className="h-20 w-auto sm:h-24"
+          />
         }
       />
       <ul className="mt-6 flex flex-wrap justify-center gap-2">

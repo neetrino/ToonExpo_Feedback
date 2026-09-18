@@ -19,7 +19,7 @@ export function PageHero({
   return (
     <div className={cn('landing-card-enter', centered && 'text-center')}>
       {icon ? (
-        <div className={cn('mb-4', centered && 'flex justify-center')} aria-hidden="true">
+        <div className={cn('mb-5', centered && 'flex justify-center')} aria-hidden="true">
           {icon}
         </div>
       ) : null}
