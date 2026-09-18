@@ -3,7 +3,6 @@ import {
   ChevronRight,
   Clock,
   Languages,
-  Lock,
   MessageCircleHeart,
   UserRoundX,
 } from 'lucide-react';
@@ -36,10 +35,6 @@ export async function LandingChoice() {
         <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-secondary">
           <Languages className="size-3.5 text-accent" aria-hidden="true" />
           {t('bilingual')}
-        </li>
-        <li className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-secondary">
-          <Lock className="size-3.5 text-accent" aria-hidden="true" />
-          {t('private')}
         </li>
       </ul>
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
