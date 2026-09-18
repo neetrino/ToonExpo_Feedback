@@ -1,10 +1,4 @@
-import {
-  CalendarCheck,
-  ChevronRight,
-  Clock,
-  Languages,
-  UserRoundX,
-} from 'lucide-react';
+import { CalendarCheck, ChevronRight, Clock, Languages, UserRoundX } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { ToonExpoLogo } from '@/components/brand/toon-expo-logo';
 import { IconBubble } from '@/components/icon-bubble';

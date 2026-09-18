@@ -24,7 +24,13 @@ export default function LocaleError({ reset }: { error: Error; reset: () => void
         }
       />
       <div className="mt-8">
-        <Button type="button" variant="gold" size="lg" className="ring-offset-primary" onClick={reset}>
+        <Button
+          type="button"
+          variant="gold"
+          size="lg"
+          className="ring-offset-primary"
+          onClick={reset}
+        >
           <RotateCcw className="size-4" aria-hidden="true" />
           {t('retry')}
         </Button>

@@ -12,8 +12,6 @@ const BRAND_LOGO_FILES = {
 export async function getBrandLogoDataUri(
   variant: keyof typeof BRAND_LOGO_FILES = 'color',
 ): Promise<string> {
-  const logo = await readFile(
-    join(process.cwd(), 'public', 'brand', BRAND_LOGO_FILES[variant]),
-  );
+  const logo = await readFile(join(process.cwd(), 'public', 'brand', BRAND_LOGO_FILES[variant]));
   return `data:image/png;base64,${logo.toString('base64')}`;
 }
