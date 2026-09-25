@@ -32,7 +32,7 @@ import {
 } from '@/lib/feedback-draft';
 import { visitedPayloadSchema, type VisitedFormValues } from '@/lib/feedback-schema';
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
-import { validateWizardStep } from '@/lib/step-validation';
+import { validateWizardPayload, validateWizardStep } from '@/lib/step-validation';
 import { ClientDraftGate, usePersistFeedbackDraft } from '@/lib/use-feedback-draft';
 
 const VISITED_STEP_FIELDS: FieldPath<VisitedFormValues>[][] = [
@@ -148,14 +148,14 @@ function VisitedFormClient() {
   }
 
   function goNext() {
-    const valid = validateWizardStep(
-      visitedPayloadSchema,
-      form.getValues(),
-      VISITED_STEP_FIELDS[step],
-      form,
-    );
+    const fields = VISITED_STEP_FIELDS[step];
+    if (!fields) {
+      return;
+    }
+    const valid = validateWizardStep(visitedPayloadSchema, form.getValues(), fields, form);
     if (!valid) {
-      scrollToFirstInvalidField();
+      setLastStepInvalid(true);
+      scrollToFirstInvalidField(step + 1);
       return;
     }
     setLastStepInvalid(false);
@@ -172,34 +172,64 @@ function VisitedFormClient() {
 
   async function onSubmit(values: VisitedFormValues) {
     setSubmitError(false);
-    const response = await fetch('/api/feedback', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(values),
-    });
-    if (!response.ok) {
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+      if (!response.ok) {
+        setSubmitError(true);
+        scrollToFirstInvalidField(step + 1);
+        return;
+      }
+    } catch {
       setSubmitError(true);
+      scrollToFirstInvalidField(step + 1);
       return;
     }
     clearFeedbackDraft(VISITED_DRAFT_KEY);
     router.push('/thanks');
   }
 
+  function showIncomplete(stepIndex: number) {
+    setLastStepInvalid(true);
+    setStep(stepIndex);
+    scrollToFirstInvalidField(stepIndex + 1);
+  }
+
   async function submitLastStep() {
     setSubmitError(false);
-    const valid = validateWizardStep(
+    const result = validateWizardPayload(
       visitedPayloadSchema,
       form.getValues(),
-      VISITED_STEP_FIELDS[step],
+      VISITED_STEP_FIELDS,
       form,
     );
-    if (!valid) {
-      setLastStepInvalid(true);
-      scrollToFirstInvalidField();
+    if (!result.valid) {
+      if (result.step === null) {
+        setSubmitError(true);
+        scrollToFirstInvalidField(step + 1);
+        return;
+      }
+      showIncomplete(result.step);
       return;
     }
     setLastStepInvalid(false);
-    await form.handleSubmit(onSubmit, scrollToFirstInvalidField)();
+    await form.handleSubmit(onSubmit, () => {
+      const retry = validateWizardPayload(
+        visitedPayloadSchema,
+        form.getValues(),
+        VISITED_STEP_FIELDS,
+        form,
+      );
+      if (!retry.valid && retry.step !== null) {
+        showIncomplete(retry.step);
+        return;
+      }
+      setSubmitError(true);
+      scrollToFirstInvalidField(step + 1);
+    })();
   }
 
   const lastIndex = VISITED_STEP_FIELDS.length - 1;
@@ -445,7 +475,15 @@ function VisitedFormClient() {
           </>
         ) : null}
 
-        {submitError ? <p className="text-sm text-destructive">{t('errors.submit')}</p> : null}
+        {submitError ? (
+          <p
+            className="scroll-mt-24 scroll-mb-32 text-sm text-destructive"
+            role="alert"
+            data-invalid="true"
+          >
+            {t('errors.submit')}
+          </p>
+        ) : null}
       </FormWizard>
     </form>
   );

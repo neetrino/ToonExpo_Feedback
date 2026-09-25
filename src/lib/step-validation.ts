@@ -34,6 +34,40 @@ export function validateWizardStep<T extends FieldValues>(
     return true;
   }
 
+  applyIssues(issues, form);
+  return false;
+}
+
+export type WizardPayloadResult = { valid: true } | { valid: false; step: number | null };
+
+/**
+ * Checks the whole form and marks only the earliest incomplete step.
+ * `step: null` means the payload failed without a field on any step.
+ */
+export function validateWizardPayload<T extends FieldValues>(
+  schema: StepSchema,
+  values: unknown,
+  steps: readonly (readonly FieldPath<T>[])[],
+  form: StepForm<T>,
+): WizardPayloadResult {
+  const parsed = schema.safeParse(values);
+  if (parsed.success) {
+    form.clearErrors();
+    return { valid: true };
+  }
+
+  const step = steps.findIndex((fields) => issuesForStep(parsed.error, fields).length > 0);
+  form.clearErrors();
+  const fields = steps[step];
+  if (step < 0 || !fields) {
+    return { valid: false, step: null };
+  }
+
+  applyIssues(issuesForStep(parsed.error, fields), form);
+  return { valid: false, step };
+}
+
+function applyIssues<T extends FieldValues>(issues: readonly ZodIssue[], form: StepForm<T>): void {
   for (const issue of issues) {
     const path = issue.path.join('.');
     if (!path) {
@@ -41,5 +75,4 @@ export function validateWizardStep<T extends FieldValues>(
     }
     form.setError(path as FieldPath<T>, { type: 'manual', message: issue.message });
   }
-  return false;
 }

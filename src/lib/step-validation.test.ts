@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { issuesForStep, validateWizardStep } from '@/lib/step-validation';
+import { issuesForStep, validateWizardPayload, validateWizardStep } from '@/lib/step-validation';
 import { visitedPayloadSchema } from '@/lib/feedback-schema';
 
 const visitedBase = {
@@ -34,6 +34,20 @@ const lastStepFields = [
   'answers.vol2WantsOther',
 ] as const;
 
+const visitedSteps = [
+  ['answers.problems', 'answers.problemsOrgDetail'],
+  [
+    'answers.visitGoals',
+    'answers.visitGoalsOther',
+    'answers.propertyOutcome',
+    'answers.propertyDetail',
+    'answers.b2bOutcome',
+    'answers.b2bDetail',
+  ],
+  scoreFields,
+  lastStepFields,
+] as const;
+
 describe('issuesForStep', () => {
   it('ignores last-step schema errors when checking the previous step', () => {
     const parsed = visitedPayloadSchema.safeParse({
@@ -65,5 +79,40 @@ describe('validateWizardStep', () => {
     expect(valid).toBe(true);
     expect(form.clearErrors).toHaveBeenCalledOnce();
     expect(setError).not.toHaveBeenCalled();
+  });
+});
+
+describe('validateWizardPayload', () => {
+  it('returns the earliest incomplete step and marks only that step', () => {
+    const setError = vi.fn();
+    const form = { clearErrors: vi.fn(), setError };
+    const result = validateWizardPayload(
+      visitedPayloadSchema,
+      {
+        ...visitedBase,
+        answers: {
+          ...visitedBase.answers,
+          problems: ['org_issues'],
+          problemsOrgDetail: '   ',
+          vol2Wants: [],
+        },
+      },
+      visitedSteps,
+      form,
+    );
+
+    expect(result).toEqual({ valid: false, step: 0 });
+    expect(setError).toHaveBeenCalledWith(
+      'answers.problemsOrgDetail',
+      expect.objectContaining({ message: 'required', type: 'manual' }),
+    );
+    expect(setError).not.toHaveBeenCalledWith('answers.vol2Wants', expect.anything());
+  });
+
+  it('accepts a complete payload', () => {
+    const form = { clearErrors: vi.fn(), setError: vi.fn() };
+    const result = validateWizardPayload(visitedPayloadSchema, visitedBase, visitedSteps, form);
+    expect(result).toEqual({ valid: true });
+    expect(form.setError).not.toHaveBeenCalled();
   });
 });

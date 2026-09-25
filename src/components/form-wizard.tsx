@@ -84,7 +84,7 @@ export function FormWizard({
         </div>
       </div>
 
-      <div key={current} className="wizard-step-panel space-y-6">
+      <div key={current} className="wizard-step-panel space-y-6" data-step={current}>
         {children}
       </div>
 
