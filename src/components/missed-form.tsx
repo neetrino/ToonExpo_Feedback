@@ -30,6 +30,7 @@ import { missedPayloadSchema, type MissedFormValues } from '@/lib/feedback-schem
 import { scrollToFirstInvalidField } from '@/lib/scroll-to-invalid-field';
 import { validateWizardPayload, validateWizardStep } from '@/lib/step-validation';
 import { ClientDraftGate, usePersistFeedbackDraft } from '@/lib/use-feedback-draft';
+import { useSubmitGuard } from '@/lib/use-submit-guard';
 
 const MISSED_STEP_FIELDS: FieldPath<MissedFormValues>[][] = [
   ['answers.noVisitReason', 'answers.noVisitOther'],
@@ -72,6 +73,7 @@ function MissedFormClient() {
   const [step, setStep] = useState(draft?.step ?? 0);
   const [submitError, setSubmitError] = useState(false);
   const [lastStepInvalid, setLastStepInvalid] = useState(false);
+  const { pending: submitPending, run: runSubmit } = useSubmitGuard();
 
   const form = useForm<MissedFormValues>({
     resolver: zodResolver(missedPayloadSchema),
@@ -136,7 +138,7 @@ function MissedFormClient() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  async function onSubmit(values: MissedFormValues) {
+  async function onSubmit(values: MissedFormValues): Promise<boolean> {
     setSubmitError(false);
     try {
       const response = await fetch('/api/feedback', {
@@ -147,15 +149,16 @@ function MissedFormClient() {
       if (!response.ok) {
         setSubmitError(true);
         scrollToFirstInvalidField(step + 1);
-        return;
+        return false;
       }
     } catch {
       setSubmitError(true);
       scrollToFirstInvalidField(step + 1);
-      return;
+      return false;
     }
     clearFeedbackDraft(MISSED_DRAFT_KEY);
     router.push('/thanks');
+    return true;
   }
 
   function showIncomplete(stepIndex: number) {
@@ -164,7 +167,7 @@ function MissedFormClient() {
     scrollToFirstInvalidField(stepIndex + 1);
   }
 
-  async function submitLastStep() {
+  async function submitValidatedPayload(): Promise<boolean> {
     setSubmitError(false);
     const result = validateWizardPayload(
       missedPayloadSchema,
@@ -176,26 +179,37 @@ function MissedFormClient() {
       if (result.step === null) {
         setSubmitError(true);
         scrollToFirstInvalidField(step + 1);
-        return;
+        return false;
       }
       showIncomplete(result.step);
-      return;
+      return false;
     }
     setLastStepInvalid(false);
-    await form.handleSubmit(onSubmit, () => {
-      const retry = validateWizardPayload(
-        missedPayloadSchema,
-        form.getValues(),
-        MISSED_STEP_FIELDS,
-        form,
-      );
-      if (!retry.valid && retry.step !== null) {
-        showIncomplete(retry.step);
-        return;
-      }
-      setSubmitError(true);
-      scrollToFirstInvalidField(step + 1);
-    })();
+    let accepted = false;
+    await form.handleSubmit(
+      async (values) => {
+        accepted = await onSubmit(values);
+      },
+      () => {
+        const retry = validateWizardPayload(
+          missedPayloadSchema,
+          form.getValues(),
+          MISSED_STEP_FIELDS,
+          form,
+        );
+        if (!retry.valid && retry.step !== null) {
+          showIncomplete(retry.step);
+          return;
+        }
+        setSubmitError(true);
+        scrollToFirstInvalidField(step + 1);
+      },
+    )();
+    return accepted;
+  }
+
+  function submitLastStep() {
+    void runSubmit(submitValidatedPayload);
   }
 
   const lastIndex = MISSED_STEP_FIELDS.length - 1;
@@ -216,7 +230,7 @@ function MissedFormClient() {
       <FormWizard
         current={step + 1}
         total={MISSED_STEP_FIELDS.length}
-        isSubmitting={form.formState.isSubmitting}
+        isSubmitting={form.formState.isSubmitting || submitPending}
         isLast={step === lastIndex}
         stepError={lastStepInvalid ? t('errors.incomplete') : undefined}
         onBack={goBack}
