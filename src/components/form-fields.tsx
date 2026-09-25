@@ -34,7 +34,7 @@ export function TextAreaField({
   error?: FieldIssue;
 }) {
   return (
-    <label className="block">
+    <label className="block scroll-mt-24 scroll-mb-32" data-invalid={error ? true : undefined}>
       <span className="mb-2 block text-sm font-medium leading-snug">{label}</span>
       <textarea
         rows={4}
@@ -45,6 +45,7 @@ export function TextAreaField({
         )}
         maxLength={500}
         {...registration}
+        aria-invalid={error ? true : undefined}
       />
       <FieldErrorText error={error} />
     </label>
@@ -67,7 +68,11 @@ export function ScoreField({
   error?: FieldIssue;
 }) {
   return (
-    <fieldset>
+    <fieldset
+      className="scroll-mt-24 scroll-mb-32"
+      data-invalid={error ? true : undefined}
+      aria-invalid={error ? true : undefined}
+    >
       <legend className="mb-3 text-[15px] font-semibold leading-snug">{label}</legend>
       <div className="grid grid-cols-5 gap-2">
         {Array.from({ length: 10 }, (_, index) => index + 1).map((score) => (
@@ -113,7 +118,11 @@ export function QuestionBlock({
   children: ReactNode;
 }) {
   return (
-    <fieldset>
+    <fieldset
+      className="scroll-mt-24 scroll-mb-32"
+      data-invalid={error ? true : undefined}
+      aria-invalid={error ? true : undefined}
+    >
       <legend className="mb-3 flex items-start gap-2 text-[15px] font-semibold leading-snug">
         {icon ? <span className="mt-0.5 text-accent">{icon}</span> : null}
         <span>{legend}</span>
