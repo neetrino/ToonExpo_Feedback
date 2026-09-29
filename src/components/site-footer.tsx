@@ -34,7 +34,7 @@ export async function SiteFooter() {
   const locale = await getLocale();
 
   return (
-    <footer className="border-t border-white/10 bg-primary text-white">
+    <footer className="border-t border-white/10 bg-primary font-footer text-white antialiased">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-7">
         <FooterMark />
         <div className="flex flex-col items-start justify-center gap-3 text-sm leading-relaxed tracking-wide sm:flex-row sm:items-center sm:justify-between">
