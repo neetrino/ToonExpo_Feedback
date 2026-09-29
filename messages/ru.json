@@ -14,6 +14,10 @@
     "siteName": "TOON EXPO",
     "languageSwitcher": "Язык"
   },
+  "footer": {
+    "copyright": "Авторские права © 2026 Toon Expo. Все права защищены. Создано <brand>Neetrino</brand>",
+    "privacy": "Политика конфиденциальности"
+  },
   "errors": {
     "required": "Это поле обязательно",
     "incomplete": "Здесь что-то не заполнено. Заполните отмеченное поле и продолжите.",

@@ -27,6 +27,10 @@
   --color-success: var(--success);
   --font-sans: 'Noto Sans Armenian', 'Noto Sans', system-ui, sans-serif;
   --font-display: Onest, 'Noto Sans', system-ui, sans-serif;
+  /* Resolved face on reg.toonexpo.com: their --font-sans variable does not apply, so the footer uses this system stack. */
+  --font-footer:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', Arial,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 :root {
