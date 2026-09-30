@@ -15,8 +15,9 @@
     "languageSwitcher": "Язык"
   },
   "footer": {
-    "copyright": "Авторские права © 2026 Toon Expo. Все права защищены. Создано <brand>Neetrino</brand>",
-    "privacy": "Политика конфиденциальности"
+    "copyright": "Copyright © 2026 Toon Expo. All Rights Reserved",
+    "credit": "Created by <brand>Neetrino</brand>",
+    "privacy": "Privacy policy"
   },
   "errors": {
     "required": "Это поле обязательно",

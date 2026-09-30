@@ -15,8 +15,9 @@
     "languageSwitcher": "Լեզու"
   },
   "footer": {
-    "copyright": "Հեղինակային իրավունք © 2026 Toon Expo։ Բոլոր իրավունքները պաշտպանված են։ Ստեղծված է <brand>Neetrino</brand>-ի կողմից",
-    "privacy": "Գաղտնիության քաղաքականություն"
+    "copyright": "Copyright © 2026 Toon Expo. All Rights Reserved",
+    "credit": "Created by <brand>Neetrino</brand>",
+    "privacy": "Privacy policy"
   },
   "errors": {
     "required": "Այս դաշտը պարտադիր է",

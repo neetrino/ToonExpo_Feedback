@@ -5,6 +5,9 @@ import { ToonExpoLogo } from '@/components/brand/toon-expo-logo';
 const FOOTER_LINK_CLASS =
   'rounded-sm underline decoration-white/50 underline-offset-4 transition-colors hover:decoration-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary motion-reduce:transition-none';
 
+const BRAND_LINK_CLASS =
+  'rounded-sm font-bold no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary';
+
 const NEETRINO_URL = 'https://www.neetrino.com/';
 const REGISTRATION_ORIGIN = 'https://reg.toonexpo.com';
 
@@ -14,7 +17,7 @@ function privacyHref(locale: string): string {
 
 function BrandLink({ children }: { children: ReactNode }) {
   return (
-    <a href={NEETRINO_URL} target="_blank" rel="noopener noreferrer" className={FOOTER_LINK_CLASS}>
+    <a href={NEETRINO_URL} target="_blank" rel="noopener noreferrer" className={BRAND_LINK_CLASS}>
       {children}
     </a>
   );
@@ -38,15 +41,16 @@ export async function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-7">
         <FooterMark />
         <div className="flex flex-col items-start justify-center gap-3 text-sm leading-relaxed tracking-wide sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-left">
-            {t.rich('copyright', {
-              brand: (chunks) => <BrandLink>{chunks}</BrandLink>,
-            })}
-          </p>
+          <p className="text-left">{t('copyright')}</p>
           <a href={privacyHref(locale)} className={FOOTER_LINK_CLASS}>
             {t('privacy')}
           </a>
         </div>
+        <p className="border-t border-white/10 pt-3 text-sm leading-relaxed tracking-wide">
+          {t.rich('credit', {
+            brand: (chunks) => <BrandLink>{chunks}</BrandLink>,
+          })}
+        </p>
       </div>
     </footer>
   );
